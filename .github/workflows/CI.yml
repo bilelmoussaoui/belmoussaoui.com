@@ -3,7 +3,6 @@ name: Build and deploy GH Pages
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -11,4 +10,4 @@ jobs:
         uses: shalzz/zola-deploy-action@v0.14.1
         env:
           PAGES_BRANCH: gh-pages
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: $GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}
