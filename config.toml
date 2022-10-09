@@ -1,0 +1,34 @@
+# The URL the site will be built for
+base_url = "http://127.0.0.1:1111/"
+
+title = "Bilal Elmoussaoui"
+description = "Personal blog & portfolio"
+compile_sass = true
+
+# Whether to build a search index to be used later on by a JavaScript library
+build_search_index = true
+default_language = "en"
+theme = "serene"
+taxonomies = [
+    {name = "tags"},             # Keep this
+    {name = "categories"}        # Keep this
+]
+[markdown]
+highlight_code = true
+highlight_theme = "nord"         # The highlight theme, choose one at https://www.getzola.org/documentation/getting-started/configuration/#syntax-highlighting
+render_emoji = true
+
+[extra]
+links = [
+    {name = "GitHub", icon = "ri-github-line", url = "https://github.com/bilelmoussaoui"},
+    {name = "Gitlab", icon = "ri-gitlab-line", url = "https://gitlab.gnome.org/bilelmoussaoui"},
+    {name = "Twitter", icon = "ri-twitter-line", url = "https://twitter.com/bilelmoussaoui"},
+    {name = "LinkedIn", icon = "ri-linkedin-line", url = "https://www.linkedin.com/in/bil-elmoussaoui/"},
+    {name = "Email", icon = "ri-mail-line", url = "mailto:bil.elmoussaoui@gmail.com"}
+]
+name = "Bilal Elmoussaoui"                    # Your name
+id = "bilelmoussaoui"                      # Your id/username/handle
+show_id = false
+bio = "Software Engineer @ Red Hat"                     # Your bio
+avatar = "avatar.jpg"       # Your avatar
+footer_copyright_name = "Bilal Elmoussaoui"

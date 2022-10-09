@@ -1,0 +1,79 @@
+[[project]]
+desc = "Tool for designing applications icons"
+links = [
+  {name = "Download", url = "https://flathub.org/apps/details/org.gnome.design.AppIconPreview"},
+  {name = "Source", url = "https://gitlab.gnome.org/World/design/app-icon-preview"},
+]
+name = "App Icon Preview"
+
+[[project]]
+desc = "A Rust & zbus wrapper of the XDG portals DBus interfaces"
+links = [
+  {name = "Demo", url = "https://flathub.org/apps/details/com.belmoussaoui.ashpd.demo"},
+  {name = "Documentation", url = "https://docs.rs/ashpd/latest/ashpd/"},
+  {name = "Source", url = "https://github.com/bilelmoussaoui/ashpd"},
+]
+name = "ASHPD"
+
+[[project]]
+desc = "Generate Two-Factor Codes"
+links = [
+  {name = "Download", url = "https://flathub.org/apps/details/com.belmoussaoui.Authenticator"},
+  {name = "Source", url = "https://gitlab.gnome.org/World/Authenticator"},
+]
+name = "Authenticator"
+
+[[project]]
+desc = "Checks whether the contrast between two colors meet the WCAG requirements"
+links = [
+  {name = "Download", url = "https://flathub.org/apps/details/org.gnome.design.Contrast"},
+  {name = "Source", url = "https://gitlab.gnome.org/World/design/contrast"},
+]
+name = "Contrast"
+
+[[project]]
+desc = "Scan and Generate QR Codes"
+links = [
+  {name = "Download", url = "https://flathub.org/apps/details/com.belmoussaoui.Decoder"},
+  {name = "Source", url = "https://gitlab.gnome.org/World/decoder/"},
+]
+name = "Decoder"
+
+[[project]]
+desc = "Flatpak integration in Visual Studio Code for building & running your application"
+links = [
+  {name = "Download", url = "https://marketplace.visualstudio.com/items?itemName=bilelmoussaoui.flatpak-vscode"},
+  {name = "Source", url = "https://github.com/bilelmoussaoui/flatpak-vscode"},
+]
+name = "Flatpak VSCode"
+
+[[project]]
+desc = "Use Flatpak in your Github Action CI pipeline"
+links = [
+  {name = "Source", url = "https://github.com/flatpak/flatpak-github-actions/"},
+]
+name = "Flatpak Github Actions"
+
+[[project]]
+desc = "Symbolic Icons for your apps"
+links = [
+  {name = "Download", url = "https://flathub.org/apps/details/org.gnome.design.IconLibrary"},
+  {name = "Source", url = "https://gitlab.gnome.org/World/design/icon-library/"},
+]
+name = "Icon Library"
+
+[[project]]
+desc = "Censor private information"
+links = [
+  {name = "Download", url = "https://flathub.org/apps/details/com.belmoussaoui.Obfuscate"},
+  {name = "Source", url = "https://gitlab.gnome.org/World/obfuscate"},
+]
+name = "Obfuscate"
+
+[[project]]
+desc = "James Bond went on a new mission and this time as a Secret Service provider."
+links = [
+  {name = "Documentation", url = "https://docs.rs/oo7/latest/oo7/"},
+  {name = "Source", url = "https://github.com/bilelmoussaoui/oo7"},
+]
+name = "OO7"
