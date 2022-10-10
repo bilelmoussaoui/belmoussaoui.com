@@ -47,7 +47,7 @@ def main():
 app.run()
 ```
 
-Let's run our **WSGI** application using python3 main.py and head to <https://127.0.0.1:5000/> to see our beautiful website.
+Let's run our **WSGI** application using python3 main.py and head to https://127.0.0.1:5000/ to see our beautiful website.
 
 Flask uses **Jinja2** as a templates engine, it allow us to render HTML templates. It uses the templates directory by default, so let's create that and add a simple HTML file.
 
@@ -80,7 +80,7 @@ app.run()
 
 ## Pymongo, the MongoDB Python API
 
-**Pymongo** is the Python implementation of the MongoDB API, that can allow us to communicate with mongodb using Python. The mongdb daemon must be running during that process. If it's your first time with your pymongo, have a look at the [official documentation](https://api.mongodb.com/python/current/tutorial.html).
+**Pymongo** is the Python implementation of the MongoDB API, that can allow us to communicate with mongodb using Python. The mongdb daemon must be running during that process. If it's your first time with your pymongo, have a look at the [official documentation](https://pymongo.readthedocs.io/en/stable/tutorial.html).
 
 Connecting to a MongoDB database is done by accessing the database name attribute from the client object.
 
@@ -124,7 +124,7 @@ Flask provides a jsonify method which converts our dict object to a JSON object 
 
 ## Displaying the data with OpenStreetMap & Leaflet
 
-In order to display our map, we will be using [Leaflet](https://leafletjs.com/), which is a JS library that allows us to interact with maps easily. We won't be using any JS build system here, if you are using VueJS in your project, you can use [Vue2Leaflet](https://korigan.github.io/Vue2Leaflet/#/)
+In order to display our map, we will be using [Leaflet](https://leafletjs.com/), which is a JS library that allows us to interact with maps easily. We won't be using any JS build system here, if you are using VueJS in your project, you can use Vue2Leaflet.
 
 Let's add the JS & CSS files to our HTML file
 ```html

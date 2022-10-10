@@ -64,4 +64,4 @@ jobs:
 
 See the [list of arguments](https://github.com/codespell-project/actions-codespell/blob/master/action.yml#L5) you can pass to the action.
 
-[By default](https://github.com/codespell-project/codespell/blob/master/codespell_lib/_codespell.py#L53) codespell uses two dictionaries "clear" and "rare". You can tweak [that list](https://github.com/codespell-project/codespell/blob/master/codespell_lib/_codespell.py#L41-L52) to use something else by passing `--builtin "clear,usage,code"`.
+[By default](https://github.com/codespell-project/codespell/blob/master/codespell_lib/_codespell.py#L53) codespell uses two dictionaries "clear" and "rare". You can tweak [that list](https://github.com/codespell-project/codespell/blob/master/codespell_lib/_codespell.py#L47) to use something else by passing `--builtin "clear,usage,code"`.

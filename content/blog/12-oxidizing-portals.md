@@ -61,7 +61,7 @@ That looks simple if you were targeting GNOME Shell as the only desktop environm
 
 Portals as in XDG portals, are a bunch of DBus interfaces as a specification that a desktop environment can implement. An application developer can then communicate with the XDG portal DBus interface instead of the desktop environment specific one. The portal implementation will take care of calling the available backend.  By their nature, the portals can't be tied to Flatpak except the few portals that were made especially for Flatpak'ed applications like the update monitor one.
 
-You can find the list of the available portals by looking at the [specifications](https://flatpak.github.io/xdg-desktop-portal/portal-docs.html#idm28). Let's try to reimplement the same thing using the [XDG portal](https://flatpak.github.io/xdg-desktop-portal/portal-docs.html#gdbus-method-org-freedesktop-portal-Screenshot.PickColor) instead of the GNOME Shell one. As portals requires a user interaction, most of the method calls in the various portals returns an [ObjectPath](https://docs.rs/zvariant/2.1.0/zvariant/struct.ObjectPath.html) like this one `/org/freedesktop/portal/desktop/request/SENDER/TOKEN` that represents a [Request](https://flatpak.github.io/xdg-desktop-portal/portal-docs.html#gdbus-org.freedesktop.portal.Request). We should then listen to a [Response](https://flatpak.github.io/xdg-desktop-portal/portal-docs.html#gdbus-signal-org-freedesktop-portal-Request.Response) signal to get the result.
+You can find the list of the available portals by looking at the [specifications](https://flatpak.github.io/xdg-desktop-portal/index.html#idm28). Let's try to reimplement the same thing using the [XDG portal](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-method-org-freedesktop-portal-Screenshot.PickColor) instead of the GNOME Shell one. As portals requires a user interaction, most of the method calls in the various portals returns an [ObjectPath](https://docs.rs/zvariant/2.1.0/zvariant/struct.ObjectPath.html) like this one `/org/freedesktop/portal/desktop/request/SENDER/TOKEN` that represents a [Request](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-org.freedesktop.portal.Request). We should then listen to a [Response](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-signal-org-freedesktop-portal-Request.Response) signal to get the result.
 
 ```rust
 use zvariant::{OwnedObjectPath, OwnedValue};
@@ -88,7 +88,7 @@ Calling the pick colour method will now gives as an Object Path instead of the r
 ```rust
 let connection = zbus::Connection::new_session()?;
 let proxy = ScreenshotProxy::new(&connection)?;
-// We don't have a window identifier, see https://flatpak.github.io/xdg-desktop-portal/portal-docs.html#parent_window
+// We don't have a window identifier, see https://flatpak.github.io/xdg-desktop-portal/index.html#parent_window
 let request_handle = proxy.pick_color("", HashMap::new())?;
 println!("{:#?}", request_handle.as_str());
 ```
@@ -108,7 +108,7 @@ loop {
 }
 ```
 
-The type T here should implement `zvariant::Type` & `serde::de::DeserializeOwned`. From the [signal documentation](https://flatpak.github.io/xdg-desktop-portal/portal-docs.html#gdbus-signal-org-freedesktop-portal-Request.Response) we can figure out the struct we would need to de-serialize a typical response 
+The type T here should implement `zvariant::Type` & `serde::de::DeserializeOwned`. From the [signal documentation](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-signal-org-freedesktop-portal-Request.Response) we can figure out the struct we would need to de-serialize a typical response 
 
 ```rust
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -202,7 +202,7 @@ fn main() -> Result<()> {
 }
 ```
 
-The crate proves it's usefulness for more complex portals like the [file chooser](https://flatpak.github.io/xdg-desktop-portal/portal-docs.html#gdbus-org.freedesktop.portal.FileChooser), here's an example from the docs on how easy it's to ask the user to select a file using the native file chooser without linking against GTK or Qt.
+The crate proves it's usefulness for more complex portals like the [file chooser](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-org.freedesktop.portal.FileChooser), here's an example from the docs on how easy it's to ask the user to select a file using the native file chooser without linking against GTK or Qt.
 
 ```rust
 use ashpd::desktop::file_chooser::{

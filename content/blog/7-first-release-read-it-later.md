@@ -15,7 +15,7 @@ mermaid = false
 cc_license = true
 +++
 
-Late last year, I wanted to find an application that I can try the Rust async features with it. I started looking for a service that had a nice Rust API wrapper already and I started prototyping Read It Later on top of [wallabag-rs](https://github.com/swalladge/wallabag-rs/).
+Late last year, I wanted to find an application that I can try the Rust async features with it. I started looking for a service that had a nice Rust API wrapper already and I started prototyping Read It Later on top of [wallabag-rs](https://sr.ht/~swalladge/wallabag-api/).
 
 Read It Later, is a well designed [Wallabag](https://www.wallabag.it/en) client.  It’s built with Rust, GTK & libhandy on the UI side. It’s fully adaptive which makes it Linux on pocket ready and also comes with a beautiful icon designed by [Tobias Bernard](https://tobiasbernard.com/).
 

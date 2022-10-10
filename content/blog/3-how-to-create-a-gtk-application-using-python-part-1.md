@@ -179,7 +179,7 @@ When I started learning GTK a few years ago, you had to deal with installing the
 
 - The Python GTK+ 3 Tutorial <https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html>
 
-- Tutorial for beginners (Python) <https://developer.gnome.org/gnome-devel-demos/stable/tutorial.py.html.en>
+- Tutorial for beginners (Python) <https://developer.gnome.org/documentation/tutorials/beginners/getting_started.html>
 
 - Flatpak Documentation <http://docs.flatpak.org/en/latest/>
 
