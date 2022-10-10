@@ -17,7 +17,7 @@ cc_license = true
 
 For nearly two years I have been inactive on my blog despite spending time making a *fancy* website, but  I can no longer afford the extra code to maintain and infrastructure work to keep it running. So I decided to move the posts I had on the old website to a statically generated one while waiting for the CI to pass during the [gtk-rs hackfest](https://wiki.gnome.org/Hackfests/Rust2022).
 
-One of the annoyances I had with statically websites generators, especially [Jekyll](https://jekyllrb.com/) is the Ruby ecosystem and how difficult it was to get any `rubygem` installed on my machine. 
+One of the annoyances I had with static websites generators is that they were too slow. Add to that [Jekyll](https://jekyllrb.com/) is written in Ruby and it was too difficult to get any `rubygem` installed on my machine.
 
 ## Enters Zola
 
