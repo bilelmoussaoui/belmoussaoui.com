@@ -22,7 +22,7 @@ render_emoji = true
 links = [
     {name = "GitHub", icon = "ri-github-line", url = "https://github.com/bilelmoussaoui"},
     {name = "Gitlab", icon = "ri-gitlab-line", url = "https://gitlab.gnome.org/bilelmoussaoui"},
-    {name = "Twitter", icon = "ri-twitter-line", url = "https://twitter.com/bilelmoussaoui"},
+    {name = "Twitter", icon = "ri-twitter-line", url = "https://twitter.com/bil_moussaoui"},
     {name = "LinkedIn", icon = "ri-linkedin-line", url = "https://www.linkedin.com/in/bil-elmoussaoui/"},
     {name = "Email", icon = "ri-mail-line", url = "mailto:bil.elmoussaoui@gmail.com"}
 ]
