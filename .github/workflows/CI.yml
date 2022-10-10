@@ -1,5 +1,5 @@
 on: push
-name: Build and deploy GH Pages
+name: CI
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,3 +11,14 @@ jobs:
         env:
           PAGES_BRANCH: gh-pages
           TOKEN: $GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}
+  codespell:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: codespell-project/actions-codespell@master
+        with:
+          check_filenames: true
+          path: content/blog
+          ignore_words_list: "crate"
+          skip: "*.svg"
+          builtin: "clear,rare,informal,code,names"

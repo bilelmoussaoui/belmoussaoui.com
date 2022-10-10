@@ -19,7 +19,7 @@ cc_license = true
 
 The usage of **MongoDB** is not arbitrary here, as it allows us to store geolocation data easily. You might need to install it on your system before following this article.
 
-Let's set up a new virtual environment using **virutalenv**
+Let's set up a new virtual environment using **virtualenv**
 ```bash
 virtualenv flask-mongodb
 source ./flask-mongodb/bin/activate
