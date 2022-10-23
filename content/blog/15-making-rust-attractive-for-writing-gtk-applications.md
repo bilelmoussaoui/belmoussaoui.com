@@ -19,7 +19,7 @@ cc_license = true
 
 The gtk-rs team has been doing an impressive amount of work during the last few years to make the experience of using GObject-based libraries in Rust enjoyable by providing high-quality, memory-safe bindings around those libraries, generated with [gir](https://github.com/gtk-rs/gir) from the [introspection data](https://gi.readthedocs.io/en/latest/).
 
-Approximately two years ago and a few months before the release of [GTK](https://gtk.org/) 4, I decided to take over the maintenance of [gtk4-rs](https://github.com/gtk-rs/gtk4-rs) and push forward the initial work made by Xiang Fan during a Google Summer of Code internship. Nowadays, these are the most used GTK 4 bindings out there with probably more than 100 applications written in it, rangng from simple applications like [Contrast](https://flathub.org/apps/details/org.gnome.design.Contrast) to complex ones like [Telegrand](https://github.com/melix99/telegrand) or [Spot](https://flathub.org/apps/details/dev.alextren.Spot).
+Approximately two years ago and a few months before the release of [GTK](https://gtk.org/) 4, I decided to take over the maintenance of [gtk4-rs](https://github.com/gtk-rs/gtk4-rs) and push forward the initial work made by Xiang Fan during a Google Summer of Code internship. Nowadays, these are the most used GTK 4 bindings out there with probably more than 100 applications written in it, ranging from simple applications like [Contrast](https://flathub.org/apps/details/org.gnome.design.Contrast) to complex ones like [Telegrand](https://github.com/melix99/telegrand) or [Spot](https://flathub.org/apps/details/dev.alextren.Spot).
 
 In this post, I will talk about the current status and what we have achieved since the first release of `gtk4-rs`.
 
@@ -31,7 +31,7 @@ As mentioned above, a good portion of the bindings is generated automatically us
 - Handling cases that are too specific to be supported by [gir](https://github.com/gtk-rs/gir). e.g, a `x_get_type` function being exposed only in a specific version.
 - Writing the necessary infrastructure code to allow developers to create custom GObjects, e.g. custom widgets or GStreamer plugins
 
-Currently, gtk4-rs is composed of 169581 lines of code automatically generated and 25725 manually written, which is approximately 13% of manual code.
+Currently, gtk4-rs is composed of ~170 000 lines of code automatically generated and ~26 000 manually written, which is approximately 13% of manual code.
 
 ### Subclassing
 
@@ -133,10 +133,12 @@ mod imp {
 
     impl ObjectImpl for SimpleWidget {
         fn dispose(&self) {
-            // since gtk 4.8
+            // since gtk 4.8 and only if you are using composite templates
             self.obj().dispose_template(Self::Type);
             // before gtk 4.8, for each direct child widget
-            // self.label.unparent();
+            // while let Some(child) = self.obj().first_child() {
+            //     child.unparent();
+            // }
         }
     }
     impl WidgetImpl for SimpleWidget {}
@@ -251,7 +253,7 @@ async fn run() -> ashpd::Result<()> {
 
 ## Keyring & oo7
 
-Applications that need to store sensitive information, such as passwords, usually use the [Secret service](https://specifications.freedesktop.org/secret-service/latest/), a protocol supported by both `gnome-keyring` and `kwallet ` nowadays. There were multiple attempts to provide a Rust wrapper for the DBus API but some common pitfalls were that they lacked async support, provided no integration with the secret portal, or they had no way to allow applications to migrate their secrets from the host keyring to the application sandboxed keyring.
+Applications that need to store sensitive information, such as passwords, usually use the [Secret service](https://specifications.freedesktop.org/secret-service/latest/), a protocol supported by both `gnome-keyring` and `kwallet` nowadays. There were multiple attempts to provide a Rust wrapper for the DBus API but some common pitfalls were that they lacked async support, provided no integration with the secret portal, or they had no way to allow applications to migrate their secrets from the host keyring to the application sandboxed keyring.
 
 Those were the primary reasons we started working on [oo7](https://crates.io/crates/oo7). It is still in alpha stage, but should cover most of the use cases already.
 
@@ -298,7 +300,7 @@ Most of the GNOME applications hosted on <https://gitlab.gnome.org> are using <h
 
 - Julian Hofer for the gtk4-rs book
 - [Christopher Davis](https://blogs.gnome.org/christopherdavis/), Jason Francis, Paolo Borelli for their work on composite templates macros
-- [Sophie Herold](https://blogs.gnome.org/sophieh/) for awesome work implementing the portal backend of oo7
+- [Sophie Herold](https://blogs.gnome.org/sophieh/) for her awesome work implementing the portal backend of oo7
 - [Zeeshan](http://zee-nix.blogspot.com/) for zbus/zvariant which unlocked plenty of use cases
 - wayland-rs developers for making it possible to integrate Wayland clients with ASHPD
 - Every other contributor to the gtk-rs ecosystem
