@@ -19,6 +19,6 @@ jobs:
         with:
           check_filenames: true
           path: content/blog
-          ignore_words_list: "crate"
+          ignore_words_list: "crate,gir,mut"
           skip: "*.svg"
           builtin: "clear,rare,informal,code,names"
