@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Tick Tock Clocks got redesigned!</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>Tick Tock Clocks got redesigned!</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2020-02-23</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/gnome"><i class="ri-hashtag ri-sm"></i><span>GNOME</span></a>
+                </div>
+            </div>    
+
+            
+            
+            <p>Few months back, I convinced Zander Brown to take over GNOME Clocks with me and we have been working hard to refresh the code base and give it a new look for GNOME 3.36.</p>
+<p>So far, we have got all the four panels re-designed based on the mockups made by the GNOME design team.</p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/alarms-1.png" alt="Alarms" /></p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/alarm-setup.png" alt="Alarms Setup" /></p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/stopwatch-1.png" alt="Stopwatch" /></p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/timer.png" alt="Timer" /></p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/world.png" alt="World" /></p>
+<p>Of course, one major thing about the new design is that the application is fully adaptive now.</p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/alarms-adaptive.png" alt="Alarms Adaptive" /></p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/stopwatch-adaptive.png" alt="Stopwatch Adaptive" /></p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/timer-adaptive.png" alt="Timer Adaptive" /></p>
+<p><img src="/posts/9-tick-tock-clocks-got-redesigned/world-adaptive.png" alt="World Adaptive" /></p>
+<p>The rest of the changes were basically code cleanup. It’s very satisfying to drop 500+ lines of dead code.</p>
+<p>We have also added GNOME Clocks to the <a href="https://wiki.gnome.org/Newcomers/ChooseProject">newcomers projects</a>, you should be able to pick up Clocks from <a href="https://flathub.org/apps/details/org.gnome.Builder">GNOME Builder</a> which will hopefully help us attract more contributors. Please reach us at #clocks:gnome.org on Matrix if you would like to get involved.</p>
+<p>The re-design is on master now, if you have some time to give it a try and report back that would be awesome! It should hit gnome-nightly pretty soon!</p>
+<p>PS: sorry for the last minute translation work</p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>   
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Oxidizing portals with zbus</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>Oxidizing portals with zbus</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2020-09-13</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/rust"><i class="ri-hashtag ri-sm"></i><span>Rust</span></a>
+                </div>
+            </div>   
+
+            <blockquote id="outdate_warn" class="note hidden" data-days="120"
+                data-text1="Note: This article was last updated " data-text2=" days ago and may be out of date.">
+                <i class="ri-alarm-warning-line ri-lg"></i><span></span>
+            </blockquote>
+            
+            <p>One major pain points of writing a desktop application that interacts with the user's desktop is that a &quot;simple&quot; task can easily become complex.  If you want to write a colour palette generator and you wanted to pick a colour, how would you do that? </p>
+<p>GNOME Shell for example provides a DBus interface <code>org.gnome.Shell.Screenshot</code> that you can communicate with by calling the <code>PickColor</code> method. The method returns a HashMap containing a single key <code>{&quot;color&quot; : [f64;3] }</code>. Thankfully with zbus calling a DBus method is pretty straightforward. </p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">use </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>dbus_proxy</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>zvariant</span><span style="color:#81a1c1;">::</span><span>OwnedValue</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>#[dbus_proxy(interface </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;org.gnome.Shell.Screenshot&quot;</span><span style="color:#eceff4;">,</span><span> default_path </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/org/gnome/Shell/Screenshot&quot;</span><span>)]
+</span><span style="color:#81a1c1;">trait </span><span style="color:#8fbcbb;">Screenshot </span><span>{
+</span><span>    </span><span style="color:#616e88;">// zbus converts the method names from PascalCase to snake_case.
+</span><span>    </span><span style="color:#81a1c1;">fn </span><span style="color:#88c0d0;">pick_color</span><span>(</span><span style="color:#81a1c1;">&amp;</span><span>self) </span><span style="color:#eceff4;">-&gt; </span><span>zbus</span><span style="color:#81a1c1;">::</span><span style="color:#8fbcbb;">Result</span><span>&lt;HashMap&lt;</span><span style="color:#8fbcbb;">String</span><span>, OwnedValue&gt;&gt;</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>By using the <a href="https://docs.rs/zbus/1.1.1/zbus/attr.dbus_proxy.html">dbus_proxy</a> macro, we can generate a <a href="https://docs.rs/zbus/1.1.1/zbus/struct.Proxy.html">Proxy</a> containing the only method we care about. We can then use our auto generated <code>ScreenshotProxy</code> to call the pick colour method </p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">fn </span><span style="color:#88c0d0;">main</span><span>() </span><span style="color:#eceff4;">-&gt; </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>fdo</span><span style="color:#81a1c1;">::</span><span style="color:#8fbcbb;">Result</span><span>&lt;()&gt; {
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> connection </span><span style="color:#81a1c1;">= </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>Connection</span><span style="color:#81a1c1;">::</span><span>new_session()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> proxy </span><span style="color:#81a1c1;">= </span><span>ScreenshotProxy</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#81a1c1;">&amp;</span><span>connection)</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>    
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> reply </span><span style="color:#81a1c1;">=</span><span> proxy</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">pick_color</span><span>()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>    println!(</span><span style="color:#a3be8c;">&quot;</span><span style="color:#ebcb8b;">{:#?}</span><span style="color:#a3be8c;">&quot;</span><span style="color:#eceff4;">,</span><span> reply)</span><span style="color:#eceff4;">; 
+</span><span>    </span><span style="color:#616e88;">// You can grab the color as Vec&lt;f64&gt; using
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> color </span><span style="color:#81a1c1;">=</span><span> reply
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">get</span><span>(</span><span style="color:#a3be8c;">&quot;color&quot;</span><span>)
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">unwrap</span><span>()
+</span><span>            </span><span style="color:#81a1c1;">.</span><span>downcast_ref</span><span style="color:#81a1c1;">::</span><span>&lt;zvariant</span><span style="color:#81a1c1;">::</span><span>Structure&gt;()
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">unwrap</span><span>()
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">fields</span><span>()
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">iter</span><span>()
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">map</span><span>(|c| </span><span style="color:#81a1c1;">*</span><span>c</span><span style="color:#81a1c1;">.</span><span>downcast_ref</span><span style="color:#81a1c1;">::</span><span>&lt;</span><span style="color:#81a1c1;">f64</span><span>&gt;()</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">unwrap</span><span>())
+</span><span>            </span><span style="color:#81a1c1;">.</span><span>collect</span><span style="color:#81a1c1;">::</span><span>&lt;</span><span style="color:#8fbcbb;">Vec</span><span>&lt;</span><span style="color:#81a1c1;">f64</span><span>&gt;&gt;()</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#8fbcbb;">Ok</span><span>(())
+</span><span>}
+</span></code></pre>
+<p>That looks simple if you were targeting GNOME Shell as the only desktop environment.  Supporting other desktop environments like KDE or any X11 based one for example would require more code from the application developer side.</p>
+<h1 id="introducing-portals">Introducing portals</h1>
+<p>Portals as in XDG portals, are a bunch of DBus interfaces as a specification that a desktop environment can implement. An application developer can then communicate with the XDG portal DBus interface instead of the desktop environment specific one. The portal implementation will take care of calling the available backend.  By their nature, the portals can't be tied to Flatpak except the few portals that were made especially for Flatpak'ed applications like the update monitor one.</p>
+<p>You can find the list of the available portals by looking at the <a href="https://flatpak.github.io/xdg-desktop-portal/index.html#idm28">specifications</a>. Let's try to reimplement the same thing using the <a href="https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-method-org-freedesktop-portal-Screenshot.PickColor">XDG portal</a> instead of the GNOME Shell one. As portals requires a user interaction, most of the method calls in the various portals returns an <a href="https://docs.rs/zvariant/2.1.0/zvariant/struct.ObjectPath.html">ObjectPath</a> like this one <code>/org/freedesktop/portal/desktop/request/SENDER/TOKEN</code> that represents a <a href="https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-org.freedesktop.portal.Request">Request</a>. We should then listen to a <a href="https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-signal-org-freedesktop-portal-Request.Response">Response</a> signal to get the result.</p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">use </span><span>zvariant</span><span style="color:#81a1c1;">::</span><span>{OwnedObjectPath</span><span style="color:#eceff4;">,</span><span> OwnedValue}</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>{dbus_proxy</span><span style="color:#eceff4;">, </span><span>fdo</span><span style="color:#81a1c1;">::</span><span>Result}</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>std</span><span style="color:#81a1c1;">::</span><span>collections</span><span style="color:#81a1c1;">::</span><span>HashMap</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>#[dbus_proxy(
+</span><span>    interface </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;org.freedesktop.portal.Screenshot&quot;</span><span style="color:#eceff4;">,
+</span><span>    default_service </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;org.freedesktop.portal.Desktop&quot;</span><span style="color:#eceff4;">,
+</span><span>    default_path </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;/org/freedesktop/portal/desktop&quot;
+</span><span>)]
+</span><span style="color:#616e88;">/// The interface lets sandboxed applications request a screenshot.
+</span><span style="color:#81a1c1;">trait </span><span style="color:#8fbcbb;">Screenshot </span><span>{
+</span><span>    </span><span style="color:#81a1c1;">fn </span><span style="color:#88c0d0;">pick_color</span><span>(
+</span><span>        </span><span style="color:#81a1c1;">&amp;</span><span>self,
+</span><span>        parent_window</span><span style="color:#eceff4;">: </span><span style="color:#81a1c1;">&amp;str</span><span>,
+</span><span>        options</span><span style="color:#eceff4;">: </span><span>HashMap&lt;</span><span style="color:#8fbcbb;">String</span><span>, OwnedValue&gt;,
+</span><span>    ) </span><span style="color:#eceff4;">-&gt; </span><span style="color:#8fbcbb;">Result</span><span>&lt;OwnedObjectPath&gt;</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>Calling the pick colour method will now gives as an Object Path instead of the result that would normally contain the colour.</p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">let</span><span> connection </span><span style="color:#81a1c1;">= </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>Connection</span><span style="color:#81a1c1;">::</span><span>new_session()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">let</span><span> proxy </span><span style="color:#81a1c1;">= </span><span>ScreenshotProxy</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#81a1c1;">&amp;</span><span>connection)</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span style="color:#616e88;">// We don&#39;t have a window identifier, see https://flatpak.github.io/xdg-desktop-portal/index.html#parent_window
+</span><span style="color:#81a1c1;">let</span><span> request_handle </span><span style="color:#81a1c1;">=</span><span> proxy</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">pick_color</span><span>(</span><span style="color:#a3be8c;">&quot;&quot;</span><span style="color:#eceff4;">, </span><span>HashMap</span><span style="color:#81a1c1;">::</span><span>new())</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>println!(</span><span style="color:#a3be8c;">&quot;</span><span style="color:#ebcb8b;">{:#?}</span><span style="color:#a3be8c;">&quot;</span><span style="color:#eceff4;">,</span><span> request_handle</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">as_str</span><span>())</span><span style="color:#eceff4;">;
+</span></code></pre>
+<p>Now that we have the necessary object path we can listen to a response signal.  As of today, zbus doesn't provide a higher level API to await for a response signal. We will do with a simple loop as we can break out of it once we have received a Response signal.</p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">loop </span><span>{
+</span><span>	</span><span style="color:#81a1c1;">let</span><span> msg </span><span style="color:#81a1c1;">=</span><span> connection</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">receive_message</span><span>()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>	</span><span style="color:#81a1c1;">let</span><span> msg_header </span><span style="color:#81a1c1;">=</span><span> msg</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">header</span><span>()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>	</span><span style="color:#81a1c1;">if</span><span> msg_header</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">message_type</span><span>()</span><span style="color:#81a1c1;">? == </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>MessageType</span><span style="color:#81a1c1;">::</span><span>Signal
+</span><span>		</span><span style="color:#81a1c1;">&amp;</span><span> msg_header</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">member</span><span>()</span><span style="color:#81a1c1;">? == </span><span style="color:#8fbcbb;">Some</span><span>(</span><span style="color:#a3be8c;">&quot;Response&quot;</span><span>)
+</span><span>	{
+</span><span>	  </span><span style="color:#616e88;">// We can retrieve the body here, but we need to de-serialize it.
+</span><span>	  </span><span style="color:#81a1c1;">let</span><span> response </span><span style="color:#81a1c1;">=</span><span> msg</span><span style="color:#81a1c1;">.</span><span>body</span><span style="color:#81a1c1;">::</span><span>&lt;T&gt;()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>	}
+</span><span>}
+</span></code></pre>
+<p>The type T here should implement <code>zvariant::Type</code> &amp; <code>serde::de::DeserializeOwned</code>. From the <a href="https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-signal-org-freedesktop-portal-Request.Response">signal documentation</a> we can figure out the struct we would need to de-serialize a typical response </p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">use </span><span>serde_repr</span><span style="color:#81a1c1;">::</span><span>{Deserialize_repr</span><span style="color:#eceff4;">,</span><span> Serialize_repr}</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>serde</span><span style="color:#81a1c1;">::</span><span>{Serialize</span><span style="color:#eceff4;">,</span><span> Deserialize}</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>zvariant_derive</span><span style="color:#81a1c1;">::</span><span>Type</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>#[derive(Serialize_repr</span><span style="color:#eceff4;">,</span><span> Deserialize_repr</span><span style="color:#eceff4;">,</span><span> PartialEq</span><span style="color:#eceff4;">,</span><span> Debug</span><span style="color:#eceff4;">,</span><span> Type)]
+</span><span>#[repr(u32)]
+</span><span style="color:#81a1c1;">enum </span><span style="color:#8fbcbb;">ResponseType </span><span>{
+</span><span>    </span><span style="color:#616e88;">/// Success, the request is carried out
+</span><span>    Success </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">0</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#616e88;">/// The user cancelled the interaction
+</span><span>    Cancelled </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">1</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#616e88;">/// The user interaction was ended in some other way
+</span><span>    Other </span><span style="color:#81a1c1;">= </span><span style="color:#b48ead;">2</span><span style="color:#eceff4;">,
+</span><span>}
+</span><span>
+</span><span>#[derive(Serialize</span><span style="color:#eceff4;">,</span><span> Deserialize</span><span style="color:#eceff4;">,</span><span> Debug</span><span style="color:#eceff4;">,</span><span> Type)]
+</span><span style="color:#81a1c1;">pub struct </span><span style="color:#8fbcbb;">Response</span><span>(ResponseType, HashMap&lt;</span><span style="color:#8fbcbb;">String</span><span>, OwnedValue&gt;)</span><span style="color:#eceff4;">;
+</span></code></pre>
+<p>We can now de-serialize the body into a Response and call a <code>FnOnce</code> on it.  The HashMap in the case of a pick colour call will contain a single key <code>color</code> with a <code>[f64;3]</code> value. <a href="https://docs.rs/zvariant_derive/2.1.0/zvariant_derive/">zvariant_derive</a> has a neat macro that allow us to de-serialize a <code>a{sv}</code> into a struct.</p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">use </span><span>zvariant_derive</span><span style="color:#81a1c1;">::</span><span>{SerializeDict</span><span style="color:#eceff4;">,</span><span> DeserializeDict</span><span style="color:#eceff4;">,</span><span> TypeDict}</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>#[derive(SerializeDict</span><span style="color:#eceff4;">,</span><span> DeserializeDict</span><span style="color:#eceff4;">,</span><span> Debug</span><span style="color:#eceff4;">,</span><span> TypeDict)]
+</span><span style="color:#81a1c1;">struct </span><span style="color:#8fbcbb;">ColorResponse </span><span>{
+</span><span>	</span><span style="color:#81a1c1;">pub </span><span>color</span><span style="color:#eceff4;">:</span><span> [</span><span style="color:#81a1c1;">f64</span><span>; 3],
+</span><span>}
+</span><span>
+</span><span>#[derive(Serialize</span><span style="color:#eceff4;">,</span><span> Deserialize</span><span style="color:#eceff4;">,</span><span> Debug</span><span style="color:#eceff4;">,</span><span> Type)]
+</span><span style="color:#81a1c1;">pub struct </span><span style="color:#8fbcbb;">Response</span><span>(pub ResponseType, pub ColorResponse)</span><span style="color:#eceff4;">;
+</span><span>
+</span><span style="color:#81a1c1;">fn </span><span style="color:#88c0d0;">main</span><span>() </span><span style="color:#eceff4;">-&gt; </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>fdo</span><span style="color:#81a1c1;">::</span><span style="color:#8fbcbb;">Result</span><span>&lt;()&gt; {
+</span><span>	</span><span style="color:#81a1c1;">let</span><span> connection </span><span style="color:#81a1c1;">= </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>Connection</span><span style="color:#81a1c1;">::</span><span>new_session()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>	</span><span style="color:#81a1c1;">let</span><span> proxy </span><span style="color:#81a1c1;">= </span><span>ScreenshotProxy</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#81a1c1;">&amp;</span><span>connection)</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>	proxy</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">pick_color</span><span>(</span><span style="color:#a3be8c;">&quot;&quot;</span><span style="color:#eceff4;">, </span><span>HashMap</span><span style="color:#81a1c1;">::</span><span>new())</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>	</span><span style="color:#81a1c1;">let </span><span style="color:#88c0d0;">callback </span><span style="color:#81a1c1;">= </span><span>|r</span><span style="color:#eceff4;">:</span><span> Response| {
+</span><span>		</span><span style="color:#81a1c1;">if</span><span> r</span><span style="color:#81a1c1;">.</span><span style="color:#b48ead;">0 </span><span style="color:#81a1c1;">== </span><span>ResponseType</span><span style="color:#81a1c1;">::</span><span>Success {
+</span><span>			println!(</span><span style="color:#a3be8c;">&quot;</span><span style="color:#ebcb8b;">{:#?}</span><span style="color:#a3be8c;">&quot;</span><span style="color:#eceff4;">,</span><span> r</span><span style="color:#81a1c1;">.</span><span style="color:#b48ead;">1.</span><span>color)</span><span style="color:#eceff4;">;
+</span><span>		}
+</span><span>	}</span><span style="color:#eceff4;">;
+</span><span>	</span><span style="color:#81a1c1;">loop </span><span>{
+</span><span>		</span><span style="color:#81a1c1;">let</span><span> msg </span><span style="color:#81a1c1;">=</span><span> connection</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">receive_message</span><span>()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>		</span><span style="color:#81a1c1;">let</span><span> msg_header </span><span style="color:#81a1c1;">=</span><span> msg</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">header</span><span>()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>		</span><span style="color:#81a1c1;">if</span><span> msg_header</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">message_type</span><span>()</span><span style="color:#81a1c1;">? == </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>MessageType</span><span style="color:#81a1c1;">::</span><span>Signal
+</span><span>			</span><span style="color:#81a1c1;">&amp;</span><span> msg_header</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">member</span><span>()</span><span style="color:#81a1c1;">? == </span><span style="color:#8fbcbb;">Some</span><span>(</span><span style="color:#a3be8c;">&quot;Response&quot;</span><span>)
+</span><span>		{
+</span><span>	  		</span><span style="color:#81a1c1;">let</span><span> response </span><span style="color:#81a1c1;">=</span><span> msg</span><span style="color:#81a1c1;">.</span><span>body</span><span style="color:#81a1c1;">::</span><span>&lt;Response&gt;()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>	  		</span><span style="color:#88c0d0;">callback</span><span>(response)</span><span style="color:#eceff4;">;
+</span><span>	  		</span><span style="color:#81a1c1;">break</span><span style="color:#eceff4;">;
+</span><span>		}
+</span><span>	}
+</span><span>	</span><span style="color:#8fbcbb;">Ok</span><span>(())
+</span><span>}
+</span></code></pre>
+<p>Despite zbus being pretty straightforward to use, using portals requires the developer to look at the specifications and figure out which options a portal request can take or the possible responses that you might receive.  Those were the primary reasons I wrote ASHPD.</p>
+<h1 id="the-ashpd-crate">The ASHPD crate</h1>
+<p>an acronym of Aperture Science Handheld Portal Device, which is the name of the portal gun in the Portal game, is a crate that aims to provide a simple API around the portals to consume from Rust. </p>
+<p>Let's see how can we pick the colour now using ashpd</p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">use </span><span>ashpd</span><span style="color:#81a1c1;">::</span><span>desktop</span><span style="color:#81a1c1;">::</span><span>screenshot</span><span style="color:#81a1c1;">::</span><span>{Color</span><span style="color:#eceff4;">,</span><span> PickColorOptions</span><span style="color:#eceff4;">,</span><span> ScreenshotProxy}</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>ashpd</span><span style="color:#81a1c1;">::</span><span>{RequestProxy</span><span style="color:#eceff4;">,</span><span> Response</span><span style="color:#eceff4;">,</span><span> WindowIdentifier}</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>{</span><span style="color:#81a1c1;">self</span><span style="color:#eceff4;">, </span><span>fdo</span><span style="color:#81a1c1;">::</span><span>Result}</span><span style="color:#eceff4;">;
+</span><span>
+</span><span style="color:#81a1c1;">fn </span><span style="color:#88c0d0;">main</span><span>() </span><span style="color:#eceff4;">-&gt; </span><span style="color:#8fbcbb;">Result</span><span>&lt;()&gt; {
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> connection </span><span style="color:#81a1c1;">= </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>Connection</span><span style="color:#81a1c1;">::</span><span>new_session()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> proxy </span><span style="color:#81a1c1;">= </span><span>ScreenshotProxy</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#81a1c1;">&amp;</span><span>connection)</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>    
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> request_handle </span><span style="color:#81a1c1;">=</span><span> proxy</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">pick_color</span><span>(
+</span><span>            WindowIdentifier</span><span style="color:#81a1c1;">::</span><span>default()</span><span style="color:#eceff4;">,
+</span><span>            PickColorOptions</span><span style="color:#81a1c1;">::</span><span>default()
+</span><span>    )</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> request </span><span style="color:#81a1c1;">= </span><span>RequestProxy</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#81a1c1;">&amp;</span><span>connection</span><span style="color:#eceff4;">, </span><span style="color:#81a1c1;">&amp;</span><span>request_handle)</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>    request</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">on_response</span><span>(|response</span><span style="color:#eceff4;">: </span><span>Response&lt;Color&gt;| {
+</span><span>        </span><span style="color:#81a1c1;">if let </span><span style="color:#8fbcbb;">Ok</span><span>(color) </span><span style="color:#81a1c1;">=</span><span> response {
+</span><span>            println!(</span><span style="color:#a3be8c;">&quot;(</span><span style="color:#ebcb8b;">{}</span><span style="color:#a3be8c;">, </span><span style="color:#ebcb8b;">{}</span><span style="color:#a3be8c;">, </span><span style="color:#ebcb8b;">{}</span><span style="color:#a3be8c;">)&quot;</span><span style="color:#eceff4;">,</span><span> color</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">red</span><span>()</span><span style="color:#eceff4;">,</span><span> color</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">green</span><span>()</span><span style="color:#eceff4;">,</span><span> color</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">blue</span><span>())</span><span style="color:#eceff4;">;
+</span><span>        }
+</span><span>   })</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>   </span><span style="color:#8fbcbb;">Ok</span><span>(())
+</span><span>}
+</span></code></pre>
+<p>The crate proves it's usefulness for more complex portals like the <a href="https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-org.freedesktop.portal.FileChooser">file chooser</a>, here's an example from the docs on how easy it's to ask the user to select a file using the native file chooser without linking against GTK or Qt.</p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">use </span><span>ashpd</span><span style="color:#81a1c1;">::</span><span>desktop</span><span style="color:#81a1c1;">::</span><span>file_chooser</span><span style="color:#81a1c1;">::</span><span>{
+</span><span>    Choice</span><span style="color:#eceff4;">,</span><span> FileChooserProxy</span><span style="color:#eceff4;">,</span><span> FileFilter</span><span style="color:#eceff4;">,</span><span> SelectedFiles</span><span style="color:#eceff4;">,</span><span> OpenFileOptions</span><span style="color:#eceff4;">,
+</span><span>}</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>ashpd</span><span style="color:#81a1c1;">::</span><span>{RequestProxy</span><span style="color:#eceff4;">,</span><span> Response</span><span style="color:#eceff4;">,</span><span> WindowIdentifier}</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>zbus</span><span style="color:#81a1c1;">::</span><span>{fdo</span><span style="color:#81a1c1;">::</span><span>Result</span><span style="color:#eceff4;">,</span><span> Connection}</span><span style="color:#eceff4;">;
+</span><span>
+</span><span style="color:#81a1c1;">fn </span><span style="color:#88c0d0;">main</span><span>() </span><span style="color:#eceff4;">-&gt; </span><span style="color:#8fbcbb;">Result</span><span>&lt;()&gt; {
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> connection </span><span style="color:#81a1c1;">= </span><span>Connection</span><span style="color:#81a1c1;">::</span><span>new_session()</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> proxy </span><span style="color:#81a1c1;">= </span><span>FileChooserProxy</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#81a1c1;">&amp;</span><span>connection)</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> request_handle </span><span style="color:#81a1c1;">=</span><span> proxy</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">open_file</span><span>(
+</span><span>        WindowIdentifier</span><span style="color:#81a1c1;">::</span><span>default()</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;Select an SVG image to minify it&quot;</span><span style="color:#eceff4;">,
+</span><span>        OpenFileOptions</span><span style="color:#81a1c1;">::</span><span>default()
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">accept_label</span><span>(</span><span style="color:#a3be8c;">&quot;_Open File&quot;</span><span>)
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">modal</span><span>(</span><span style="color:#81a1c1;">true</span><span>)
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">multiple</span><span>(</span><span style="color:#81a1c1;">true</span><span>)
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">filter</span><span>(FileFilter</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#a3be8c;">&quot;SVG Image&quot;</span><span>)</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">mimetype</span><span>(</span><span style="color:#a3be8c;">&quot;image/svg+xml&quot;</span><span>))</span><span style="color:#eceff4;">,
+</span><span>    )</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> request </span><span style="color:#81a1c1;">= </span><span>RequestProxy</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#81a1c1;">&amp;</span><span>connection</span><span style="color:#eceff4;">, </span><span style="color:#81a1c1;">&amp;</span><span>request_handle)</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>    request</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">on_response</span><span>(|r</span><span style="color:#eceff4;">: </span><span>Response&lt;SelectedFiles&gt;| {
+</span><span>        println!(</span><span style="color:#a3be8c;">&quot;</span><span style="color:#ebcb8b;">{:#?}</span><span style="color:#a3be8c;">&quot;</span><span style="color:#eceff4;">,</span><span> r</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">unwrap</span><span>())</span><span style="color:#eceff4;">;
+</span><span>    })</span><span style="color:#81a1c1;">?</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    </span><span style="color:#8fbcbb;">Ok</span><span>(())
+</span><span>}
+</span></code></pre>
+<p>Currently the crate supports all the available portals, though some signals might be missing till a proper signal support lands in upstream zbus. I'm very thankful for the help/support I've got from Zeeshan &amp; Marc-André Lureau, my work wouldn't have been possible without zbus &amp; zvariant.</p>
+<p>If you would like to contribute, read a bit how some of the portals work or just have a more complex DBus API wrapper to learn how to use zbus</p>
+<ul>
+<li>Source code: <a href="https://github.com/bilelmoussaoui/ashpd">https://github.com/bilelmoussaoui/ashpd</a></li>
+<li>Crates.io: <a href="https://crates.io/crates/ashpd">https://crates.io/crates/ashpd</a></li>
+<li>Documentation : <a href="https://docs.rs/ashpd/">https://docs.rs/ashpd/</a></li>
+</ul>
+<p>Until then, happy hacking!</p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#introducing-portals">Introducing portals</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#the-ashpd-crate">The ASHPD crate</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script> 
+<script src="/js/outdate.js"></script> 
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

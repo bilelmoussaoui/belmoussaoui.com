@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Integrating codespell into your CI</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>Integrating codespell into your CI</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2020-10-02</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/ci"><i class="ri-hashtag ri-sm"></i><span>CI</span></a>
+                </div>
+            </div>    
+
+            
+            
+            <p>If you have never heard of <a href="https://github.com/codespell-project/codespell">codespell</a>, it's a command line utility to check for common misspellings with the possibility to add your own dictionaries. I have looked lately at integrating it as part of the CI for some of my projects. </p>
+<h1 id="gitlab-ci">Gitlab CI</h1>
+<p>Currently codespell doesn't provide a docker image that could be used for CI. You can create your own or use a pretty simple <a href="https://hub.docker.com/r/bilelmoussaoui/codespell">image</a> I have setup and pushed to <a href="https://hub.docker.com">https://hub.docker.com</a>. </p>
+<p>The docker image is a simple as </p>
+<pre data-lang="dockerfile" style="background-color:#2e3440;color:#d8dee9;" class="language-dockerfile "><code class="language-dockerfile" data-lang="dockerfile"><span style="color:#81a1c1;">FROM</span><span> python:</span><span style="color:#8fbcbb;">3.8
+</span><span>
+</span><span style="color:#81a1c1;">RUN </span><span>pip3 install codespell
+</span><span>
+</span><span>Once you have an image up and ready, you can add it to your .gitlab-ci.yml
+</span><span>
+</span><span>codespell:
+</span><span>  image: &quot;docker.io/bilelmoussaoui/codespell&quot;
+</span><span>  script:
+</span><span>    - codespell -S &quot;*.png,*.po,.git,*.jpg&quot; -f
+</span></code></pre>
+<p><code>-S</code> argument is a comma separated glob pattern, directories or files to ignore. The <code>-f</code> argument makes codespell check the file names as well.</p>
+<p>You can find more about the possible options you can pass by running <code>codepsell --help</code></p>
+<h1 id="github-actions">Github Actions</h1>
+<p>Codespell provides a <a href="https://github.com/codespell-project/actions-codespell">Github Action</a> so integrating it as a workflow should be straightforward </p>
+<pre data-lang="yaml" style="background-color:#2e3440;color:#d8dee9;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#81a1c1;">on</span><span style="color:#eceff4;">:
+</span><span>  </span><span style="color:#8fbcbb;">push</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">branches</span><span style="color:#eceff4;">: </span><span>[</span><span style="color:#a3be8c;">master</span><span>]
+</span><span>  </span><span style="color:#8fbcbb;">pull_request</span><span style="color:#eceff4;">:
+</span><span>
+</span><span style="color:#8fbcbb;">name</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">Spell Check
+</span><span>
+</span><span style="color:#8fbcbb;">jobs</span><span style="color:#eceff4;">:
+</span><span>  </span><span style="color:#8fbcbb;">codespell</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">runs-on</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">ubuntu-latest
+</span><span>    </span><span style="color:#8fbcbb;">steps</span><span style="color:#eceff4;">:
+</span><span>      - </span><span style="color:#8fbcbb;">uses</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">actions/checkout@v2
+</span><span>      - </span><span style="color:#8fbcbb;">uses</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">codespell-project/actions-codespell@master
+</span><span>        </span><span style="color:#8fbcbb;">with</span><span style="color:#eceff4;">:
+</span><span>          </span><span style="color:#8fbcbb;">check_filenames</span><span style="color:#eceff4;">: </span><span style="color:#81a1c1;">true
+</span></code></pre>
+<p>See the <a href="https://github.com/codespell-project/actions-codespell/blob/master/action.yml#L5">list of arguments</a> you can pass to the action.</p>
+<p><a href="https://github.com/codespell-project/codespell/blob/master/codespell_lib/_codespell.py#L53">By default</a> codespell uses two dictionaries &quot;clear&quot; and &quot;rare&quot;. You can tweak <a href="https://github.com/codespell-project/codespell/blob/master/codespell_lib/_codespell.py#L47">that list</a> to use something else by passing <code>--builtin &quot;clear,usage,code&quot;</code>.</p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#gitlab-ci">Gitlab CI</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#github-actions">Github Actions</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>   
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

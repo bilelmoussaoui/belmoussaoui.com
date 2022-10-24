@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Build win32&#x2F;win64 nightlies using Gitlab CI</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>Build win32&#x2F;win64 nightlies using Gitlab CI</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2019-09-30</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/gnome"><i class="ri-hashtag ri-sm"></i><span>GNOME</span></a><a class="tag" href="https://belmoussaoui.com/tags/ci"><i class="ri-hashtag ri-sm"></i><span>CI</span></a>
+                </div>
+            </div>    
+
+            
+            
+            <p>A week ago after getting Dia nightlies published on GNOME's new Flatpak nightlies infrastructure I was discussing with Zander Brown, the new maintainer of Dia, of the possibility to publish Windows nightlies through Gitlab the same way we do with Flatpak bundles. A few minutes later I was already trying to cargo-cult what Gedit had to build Windows bundles.</p>
+<p>It took me a bit of time to figure out how things work, especially that I wanted to make it easier for you to set up a win32/win64 build for your project without much work and as we already use a CI template for Flatpak builds, I ended up doing something pretty similar, but a bit more complex under the hood.</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;6-build-win32-win64-nightlies-using-gitlab-ci&#x2F;Screenshot-from-2019-09-30-05-22-58.png" >
+    
+    <figcaption>Gitlab CI buildings Win32&#x2F;Win64 bundles</figcaption>
+    
+</figure>
+<p><img src="/posts/6-build-win32-win64-nightlies-using-gitlab-ci/Screenshot-from-2019-09-30-05-41-25.png" alt="CI Artifacts" /></p>
+<h2 id="how-it-works">How it works?</h2>
+<p>We are using <a href="http://www.mingw.org/">MinGW</a> (Minimalist GNU Windows) under the hood, we build a &quot;chroot&quot; and install all the basic dependencies. Once that's done, we need to build the application and for that we use a PKGBUILD file which we configure and build to create a package that we installer later on the chroot directory. After that, we remove few unneeded stuff like docs, metainfo, desktop files, unneeded executable files (we still need to improve that) and we have our package ready to pass it to <a href="https://wixtoolset.org/">Wix Toolset</a> (Windows Installer XML Toolset). Wix Toolset is a pretty complicated thing and I have just put things together to make it work :P It what creates the installer for us, the entry on the start menu and so on. As it's still a WIP project, things might change a bit in the future.</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;6-build-win32-win64-nightlies-using-gitlab-ci&#x2F;Screenshot-from-2019-09-30-05-58-35.png" >
+    
+    <figcaption>Palette running from a Windows 10 VM on GNOME Boxes</figcaption>
+    
+</figure>
+<h2 id="how-to-use-it-on-your-project">How to use it on your project?</h2>
+<p>The current state of the project isn't ready to be used yet, the produced bundles are a bit large and I need to handle the dependencies a bit better. But it should be something like this once released for the public usage:</p>
+<p>In order to setup a Gitlab CI that creates a nightly windows bundles for you all you have to do is create a <code>.gitlab-ci.yml</code> in the source tree of your project with something equivalent to this</p>
+<pre data-lang="yaml" style="background-color:#2e3440;color:#d8dee9;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#8fbcbb;">include</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&#39;https://gitlab.gnome.org/bilelmoussaoui/win32-ci-template/raw/master/ci-template.yml&#39;
+</span><span>
+</span><span style="color:#8fbcbb;">variables</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">GIT_SUBMODULE_STRATEGY</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">recursive
+</span><span>    </span><span style="color:#8fbcbb;">APP_NAME</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;Palette&quot;
+</span><span>    </span><span style="color:#8fbcbb;">BIN_NAME</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;org.gnome.zbrown.Palette&quot;
+</span><span>    </span><span style="color:#8fbcbb;">MSI_BUNDLE</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;palette.msi&quot;
+</span><span>    </span><span style="color:#8fbcbb;">MANUFACTURER</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;GNOME&quot;
+</span><span>    </span><span style="color:#8fbcbb;">MESON_ARGS</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;&quot;
+</span><span>    </span><span style="color:#8fbcbb;">VERSION</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;0.1&quot;
+</span><span>    </span><span style="color:#8fbcbb;">DEPENDENCIES</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;vala gtk3 gobject-introspection gettext appstream-glib meson ninja&quot;
+</span><span>    </span><span style="color:#8fbcbb;">ICON_PATH</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;data/org.gnome.zbrown.Palette.svg&quot;
+</span><span>
+</span><span style="color:#8fbcbb;">win32</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">extends</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">.win32
+</span><span>
+</span><span style="color:#8fbcbb;">win64</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">extends</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">.win64
+</span></code></pre>
+<h2 id="the-plans">The plans</h2>
+<p>I have a lot of plans to improve this and allow the applications that used/want to ship a windows bundle do that with the less work possible. Here's my roadmap for the first &quot;public&quot; release</p>
+<ul>
+<li>
+<p>Reduce bundle size</p>
+</li>
+<li>
+<p>Correctly handle dependencies</p>
+</li>
+<li>
+<p>Use a container to reduce the downloaded packages for each build</p>
+</li>
+</ul>
+<p>Any of this wouldn't be possible without the work from MinGW, Gedit developers/contributors who made the installer in the past and StackOverflow.</p>
+<p>Source code: <a href="https://gitlab.gnome.org/bilelmoussaoui/win32-ci-template/">https://gitlab.gnome.org/bilelmoussaoui/win32-ci-template/</a></p>
+<p>If you want to help me improve this &quot;faster&quot; you can either buy me a coffee to keep me awake like tonight (it's 6am and still awake) you can do that from here <a href="https://paypal.me/BilalELMoussaoui">https://paypal.me/BilalELMoussaoui</a></p>
+<p>See you soon with more awesome stuff!</p>
+<p><img src="/posts/6-build-win32-win64-nightlies-using-gitlab-ci/Screenshot-from-2019-09-30-02-46-48.png" alt="Palette Windows Installer" /></p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#how-it-works">How it works?</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#how-to-use-it-on-your-project">How to use it on your project?</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#the-plans">The plans</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>   
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

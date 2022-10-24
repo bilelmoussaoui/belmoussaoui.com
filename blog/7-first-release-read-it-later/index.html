@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Read It Later, yet an other GTK &amp; Rust application</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>Read It Later, yet an other GTK &amp; Rust application</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2020-02-04</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/gnome"><i class="ri-hashtag ri-sm"></i><span>GNOME</span></a><a class="tag" href="https://belmoussaoui.com/tags/rust"><i class="ri-hashtag ri-sm"></i><span>Rust</span></a>
+                </div>
+            </div>    
+
+            
+            
+            <p>Late last year, I wanted to find an application that I can try the Rust async features with it. I started looking for a service that had a nice Rust API wrapper already and I started prototyping Read It Later on top of <a href="https://sr.ht/%7Eswalladge/wallabag-api/">wallabag-rs</a>.</p>
+<p>Read It Later, is a well designed <a href="https://www.wallabag.it/en">Wallabag</a> client.  It’s built with Rust, GTK &amp; libhandy on the UI side. It’s fully adaptive which makes it Linux on pocket ready and also comes with a beautiful icon designed by <a href="https://tobiasbernard.com/">Tobias Bernard</a>.</p>
+<p><img src="/posts/7-first-release-read-it-later/image.png" alt="App Icon Preview" /></p>
+<p>Screenshot taken using App Icon Preview</p>
+<p>It allows you to do the basic things:</p>
+<ul>
+<li>Login/Logout/Sync</li>
+<li>Add/Favorite/Archive/Delete an article</li>
+<li>Dark Mode Reader</li>
+<li>Adaptive UI</li>
+</ul>
+<p><img src="/posts/7-first-release-read-it-later/Screenshot-from-2020-02-05-20-15-48.png" alt="Login View" /></p>
+<p><img src="/posts/7-first-release-read-it-later/screenshot1.png" alt="Articles View" /></p>
+<p><img src="/posts/7-first-release-read-it-later/screenshot2.png" alt="Article View" /></p>
+<p><img src="/posts/7-first-release-read-it-later/screenshot3.png" alt="Adaptive View" /></p>
+<p>You can grab it already from Flathub at <a href="https://flathub.org/apps/details/com.belmoussaoui.ReadItLater">https://flathub.org/apps/details/com.belmoussaoui.ReadItLater</a>. If you would like to contribute, the source code is available at <a href="https://gitlab.gnome.org/bilelmoussaoui/read-it-later">https://gitlab.gnome.org/bilelmoussaoui/read-it-later</a></p>
+<p>So far, writing apps with GTK &amp; Rust have been a fun experience. GNOME Builder &amp; Flatpak made the developer experience smooth 🙂</p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>   
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

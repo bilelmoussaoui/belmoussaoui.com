@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>How to Flatpak a Rust application</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>How to Flatpak a Rust application</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2020-02-08</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/flatpak"><i class="ri-hashtag ri-sm"></i><span>Flatpak</span></a><a class="tag" href="https://belmoussaoui.com/tags/rust"><i class="ri-hashtag ri-sm"></i><span>Rust</span></a>
+                </div>
+            </div>   
+
+            <blockquote id="outdate_warn" class="note hidden" data-days="120"
+                data-text1="Note: This article was last updated " data-text2=" days ago and may be out of date.">
+                <i class="ri-alarm-warning-line ri-lg"></i><span></span>
+            </blockquote>
+            
+            <p>Distributing and packaging your Rust GUI application and making it available for Linux users can be hard, I will try to explain the various ways of doing that using Flatpak as a packaging format.</p>
+<p>I will be using a <a href="http://gtk-rs.org/">GTK + Rust</a> application as an example to distribute it as a Flatpak in two different ways.</p>
+<ul>
+<li>
+<p>The first one, involves adding a build system, on top of Cargo to handle installing the different files we will need to ensure our application can be found, installed and used by the users. We will be using <a href="http://mesonbuild.com/">Meson</a></p>
+</li>
+<li>
+<p>The second one, will just use Cargo and install those files manually during the Flatpak build</p>
+</li>
+</ul>
+<h2 id="creating-a-simple-application">Creating a simple application</h2>
+<p>Let’s start with creating a simple Rust project by typing</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">cargo</span><span> new rust-flatpak
+</span></code></pre>
+<p>The first step would be adding our dependencies to <code>Cargo.toml</code></p>
+<pre data-lang="toml" style="background-color:#2e3440;color:#d8dee9;" class="language-toml "><code class="language-toml" data-lang="toml"><span>[package]
+</span><span style="color:#81a1c1;">name </span><span>= </span><span style="color:#a3be8c;">&quot;rust-flatpak&quot;
+</span><span style="color:#81a1c1;">version </span><span>= </span><span style="color:#a3be8c;">&quot;0.1.0&quot;
+</span><span style="color:#81a1c1;">authors </span><span>= [</span><span style="color:#a3be8c;">&quot;Bilal Elmoussaoui &lt;bil.elmoussaoui@gmail.com&gt;&quot;</span><span>]
+</span><span style="color:#81a1c1;">edition </span><span>= </span><span style="color:#a3be8c;">&quot;2018&quot;
+</span><span>
+</span><span style="color:#616e88;"># See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+</span><span>
+</span><span>[dependencies]
+</span><span style="color:#81a1c1;">gtk </span><span>= </span><span style="color:#a3be8c;">&quot;0.8&quot;
+</span><span style="color:#81a1c1;">gio </span><span>= </span><span style="color:#a3be8c;">&quot;0.8&quot;
+</span></code></pre>
+<p>and create a simple window, the code is from <a href="https://github.com/gtk-rs/examples/">https://github.com/gtk-rs/examples/</a>. You can check that repository if you need more examples.</p>
+<pre data-lang="rust" style="background-color:#2e3440;color:#d8dee9;" class="language-rust "><code class="language-rust" data-lang="rust"><span style="color:#81a1c1;">use </span><span>gio</span><span style="color:#81a1c1;">::</span><span>prelude</span><span style="color:#81a1c1;">::*</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>gtk</span><span style="color:#81a1c1;">::</span><span>prelude</span><span style="color:#81a1c1;">::*</span><span style="color:#eceff4;">;
+</span><span style="color:#81a1c1;">use </span><span>std</span><span style="color:#81a1c1;">::</span><span>env</span><span style="color:#81a1c1;">::</span><span>args</span><span style="color:#eceff4;">;
+</span><span>
+</span><span style="color:#81a1c1;">fn </span><span style="color:#88c0d0;">build_ui</span><span>(application</span><span style="color:#eceff4;">: </span><span style="color:#81a1c1;">&amp;</span><span>amp;gtk</span><span style="color:#81a1c1;">::</span><span>Application) {
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> window </span><span style="color:#81a1c1;">= </span><span>gtk</span><span style="color:#81a1c1;">::</span><span>ApplicationWindow</span><span style="color:#81a1c1;">::</span><span>new(application)</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    window</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">set_title</span><span>(</span><span style="color:#a3be8c;">&quot;First GTK+ Program&quot;</span><span>)</span><span style="color:#eceff4;">;
+</span><span>    window</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">set_border_width</span><span>(</span><span style="color:#b48ead;">10</span><span>)</span><span style="color:#eceff4;">;
+</span><span>    window</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">set_position</span><span>(gtk</span><span style="color:#81a1c1;">::</span><span>WindowPosition</span><span style="color:#81a1c1;">::</span><span>Center)</span><span style="color:#eceff4;">;
+</span><span>    window</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">set_default_size</span><span>(</span><span style="color:#b48ead;">350</span><span style="color:#eceff4;">, </span><span style="color:#b48ead;">70</span><span>)</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> button </span><span style="color:#81a1c1;">= </span><span>gtk</span><span style="color:#81a1c1;">::</span><span>Button</span><span style="color:#81a1c1;">::</span><span>new_with_label(</span><span style="color:#a3be8c;">&quot;Click me!&quot;</span><span>)</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    window</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">add</span><span>(</span><span style="color:#81a1c1;">&amp;</span><span>amp</span><span style="color:#eceff4;">;</span><span>button)</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    window</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">show_all</span><span>()</span><span style="color:#eceff4;">;
+</span><span>}
+</span><span>
+</span><span style="color:#81a1c1;">fn </span><span style="color:#88c0d0;">main</span><span>() {
+</span><span>    </span><span style="color:#81a1c1;">let</span><span> application </span><span style="color:#81a1c1;">=
+</span><span>        gtk</span><span style="color:#81a1c1;">::</span><span>Application</span><span style="color:#81a1c1;">::</span><span>new(</span><span style="color:#8fbcbb;">Some</span><span>(</span><span style="color:#a3be8c;">&quot;com.belmoussaoui.RustFlatpak&quot;</span><span>)</span><span style="color:#eceff4;">, </span><span style="color:#8fbcbb;">Default</span><span style="color:#81a1c1;">::</span><span>default())
+</span><span>            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">expect</span><span>(</span><span style="color:#a3be8c;">&quot;Initialization failed...&quot;</span><span>)</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    application</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">connect_activate</span><span>(|app| {
+</span><span>        </span><span style="color:#88c0d0;">build_ui</span><span>(app)</span><span style="color:#eceff4;">;
+</span><span>    })</span><span style="color:#eceff4;">;
+</span><span>
+</span><span>    application</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">run</span><span>(</span><span style="color:#81a1c1;">&amp;</span><span>amp</span><span style="color:#eceff4;">;</span><span style="color:#88c0d0;">args</span><span>()</span><span style="color:#81a1c1;">.</span><span>collect</span><span style="color:#81a1c1;">::</span><span>&lt;</span><span style="color:#8fbcbb;">Vec</span><span>&lt;</span><span style="color:#81a1c1;">_</span><span>&gt;&gt;())</span><span style="color:#eceff4;">;
+</span><span>}
+</span></code></pre>
+<p>One important thing about how we create our a <code>gtk::Application</code> is the Application identifier we pass to it. If you don’t have an idea what an application id is, this guide should be complete <a href="https://developer.gnome.org/ChooseApplicationID/">https://developer.gnome.org/ChooseApplicationID/</a>. Once we have finished building our application, the next step would be the packaging and distribution of what we just created.</p>
+<p>We will need to prepare few files before doing so:</p>
+<ul>
+<li>
+<p>A metainfo, which is a a file that describes your application for stores like Flathub, GNOME Software, KDE Discover or elementary’s AppCenter. The specifications of this file can be found at <a href="https://www.freedesktop.org/software/appstream/docs/">https://www.freedesktop.org/software/appstream/docs/</a>.</p>
+</li>
+<li>
+<p>A desktop file, which is the launcher of the application that the user finds on their app launcher thing/dashboard. It specifies the app name, the binary that should be executed, an icon name and probably other stuff likes categories/keywords. You can read more about that here <a href="https://specifications.freedesktop.org/desktop-entry-spec/latest/">https://specifications.freedesktop.org/desktop-entry-spec/latest/</a></p>
+</li>
+<li>
+<p>An icon, to make your app easier to find 🙂</p>
+</li>
+</ul>
+<h2 id="packaging-related-files">Packaging related files</h2>
+<h3 id="metainfo-file">Metainfo file</h3>
+<p>Metainfo file, should include as much information about the application that allows the user to find it easily. You should provide some decent screenshots of the application, release tags and OARS tag. Providing a URL to your website or where to translate/report issues/donate could be added too.</p>
+<p>The specs contains enough information about that, but here’s an example of such file, it should be named following <code>$app-id.metainfo.xml</code> and installed under <code>$prefix/$datadir/metainfo</code>.</p>
+<pre data-lang="xml" style="background-color:#2e3440;color:#d8dee9;" class="language-xml "><code class="language-xml" data-lang="xml"><span style="color:#5e81ac;">&lt;?xml </span><span style="color:#8fbcbb;">version</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;1.0&quot; </span><span style="color:#8fbcbb;">encoding</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;UTF-8&quot;</span><span style="color:#5e81ac;">?&gt;
+</span><span style="color:#616e88;">&lt;!-- Bilal Elmoussaoui 2020 &lt;bilal.elmoussaoui@gnome.org&gt; --&gt;
+</span><span style="color:#81a1c1;">&lt;component </span><span style="color:#8fbcbb;">type</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;desktop-application&quot;</span><span style="color:#81a1c1;">&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;id&gt;</span><span style="color:#eceff4;">com.belmoussaoui.RustFlatpak</span><span style="color:#81a1c1;">&lt;/id&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;metadata_license&gt;</span><span style="color:#eceff4;">CC0</span><span style="color:#81a1c1;">&lt;/metadata_license&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;project_license&gt;</span><span style="color:#eceff4;">GPL-3.0+</span><span style="color:#81a1c1;">&lt;/project_license&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;name&gt;</span><span style="color:#eceff4;">Rust Flatpak</span><span style="color:#81a1c1;">&lt;/name&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;summary&gt;</span><span style="color:#eceff4;">Rust Flatpak-ed app?</span><span style="color:#81a1c1;">&lt;/summary&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;description&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;p&gt;</span><span style="color:#eceff4;">This metainfo is part of a Rust Flatpak-ed application</span><span style="color:#81a1c1;">&lt;/p&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;/description&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;screenshots&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;screenshot </span><span style="color:#8fbcbb;">type</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;default&quot;</span><span style="color:#81a1c1;">&gt;
+</span><span style="color:#eceff4;">      </span><span style="color:#81a1c1;">&lt;image&gt;</span><span style="color:#eceff4;">https://gitlab.gnome.org/World/design/contrast/raw/master/data/resources/screenshots/screenshot1.png</span><span style="color:#81a1c1;">&lt;/image&gt;
+</span><span style="color:#eceff4;">      </span><span style="color:#81a1c1;">&lt;caption&gt;</span><span style="color:#eceff4;">Main Window</span><span style="color:#81a1c1;">&lt;/caption&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;/screenshot&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;/screenshots&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;url </span><span style="color:#8fbcbb;">type</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;homepage&quot;</span><span style="color:#81a1c1;">&gt;</span><span style="color:#eceff4;">https://belmoussaoui.com/</span><span style="color:#81a1c1;">&lt;/url&gt;
+</span><span style="color:#616e88;">&lt;!--
+</span><span style="color:#616e88;">Open Age Rating Service
+</span><span style="color:#616e88;">https://hughsie.github.io/oars/index.html
+</span><span style="color:#616e88;">--&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;content_rating </span><span style="color:#8fbcbb;">type</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;oars-1.0&quot; </span><span style="color:#81a1c1;">/&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;releases&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;release </span><span style="color:#8fbcbb;">version</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;0.0.1&quot; </span><span style="color:#8fbcbb;">date</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;2020-02-08&quot;</span><span style="color:#81a1c1;">&gt;
+</span><span style="color:#eceff4;">      </span><span style="color:#81a1c1;">&lt;description&gt;
+</span><span style="color:#eceff4;">        </span><span style="color:#81a1c1;">&lt;p&gt;</span><span style="color:#eceff4;">First release of Rust Flatpak App</span><span style="color:#81a1c1;">&lt;/p&gt;
+</span><span style="color:#eceff4;">      </span><span style="color:#81a1c1;">&lt;/description&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;/release&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;/releases&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;kudos&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#616e88;">&lt;!--
+</span><span style="color:#616e88;">    GNOME Software kudos:
+</span><span style="color:#616e88;">    https://gitlab.gnome.org/GNOME/gnome-software/blob/master/doc/kudos.md
+</span><span style="color:#616e88;">    --&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;kudo&gt;</span><span style="color:#eceff4;">ModernToolkit</span><span style="color:#81a1c1;">&lt;/kudo&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;kudo&gt;</span><span style="color:#eceff4;">HiDpiIcon</span><span style="color:#81a1c1;">&lt;/kudo&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;/kudos&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;developer_name&gt;</span><span style="color:#eceff4;">Bilal Elmoussaoui</span><span style="color:#81a1c1;">&lt;/developer_name&gt;
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;update_contact&gt;</span><span style="color:#eceff4;">bilal.elmoussaoui@gnome.org</span><span style="color:#81a1c1;">&lt;/update_contact&gt;
+</span><span style="color:#eceff4;">
+</span><span style="color:#eceff4;">  </span><span style="color:#81a1c1;">&lt;launchable </span><span style="color:#8fbcbb;">type</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;desktop-id&quot;</span><span style="color:#81a1c1;">&gt;</span><span style="color:#eceff4;">com.belmoussaoui.RustFlatpak.desktop</span><span style="color:#81a1c1;">&lt;/launchable&gt;
+</span><span style="color:#81a1c1;">&lt;/component&gt;
+</span></code></pre>
+<h3 id="desktop-file">Desktop file</h3>
+<p>A desktop file is a simple launcher for the application, it shouldn’t contain more than. The file should be named <code>com.belmoussaoui.RustFlatpak.desktop</code>, if you look at the bottom of the metainfo file, we link the desktop file to it using the launchable tag. This allows the software center to figure out how to start your application.</p>
+<p>The file should be installed under <code>$prefix/$datadir/applications</code></p>
+<pre data-lang="ini" style="background-color:#2e3440;color:#d8dee9;" class="language-ini "><code class="language-ini" data-lang="ini"><span style="color:#81a1c1;">[Desktop Entry]
+</span><span>Name</span><span style="color:#81a1c1;">=</span><span>Rust Flatpak
+</span><span>Comment</span><span style="color:#81a1c1;">=</span><span>Rust Flapaked application
+</span><span>Type</span><span style="color:#81a1c1;">=</span><span>Application
+</span><span style="color:#616e88;"># should be the same as the Cargo project name
+</span><span>Exec</span><span style="color:#81a1c1;">=</span><span>rust</span><span style="color:#81a1c1;">-</span><span>flatpak
+</span><span>Terminal</span><span style="color:#81a1c1;">=false
+</span><span>Categories</span><span style="color:#81a1c1;">=</span><span>Utility;</span><span style="color:#8fbcbb;">GTK</span><span>;
+</span><span>Keywords</span><span style="color:#81a1c1;">=</span><span>Rust;Flatpak;</span><span style="color:#8fbcbb;">GTK</span><span>;
+</span><span>Icon</span><span style="color:#81a1c1;">=</span><span>com</span><span style="color:#81a1c1;">.</span><span>belmoussaoui</span><span style="color:#81a1c1;">.</span><span>RustFlatpak
+</span><span>StartupNotify</span><span style="color:#81a1c1;">=true
+</span></code></pre>
+<h3 id="icon">Icon</h3>
+<p>The application should provide an icon, either in various sizes or as a scalable SVG version. Most stores uses either 64px or 128px icons, but the application icon might be used at smaller sizes like 48px somewhere else.</p>
+<p>The icon should be installed under <code>$prefix/$datadir/icons/hicolor/scalable/apps/</code> in case you’re shipping an SVG icon. Otherwise it should be installed under <code>$prefix/$datadir/icons/hicolor/48x48/apps/</code>, the default available sizes are: 16, 32, 48, 64, 128, 256</p>
+<h2 id="flatpak">Flatpak!</h2>
+<h3 id="using-meson-build-system">Using Meson Build System</h3>
+<p>The usage of Meson might seem not very useful if you’re not used to the GNOME Stack, but it provides a ton of features in a human readable way of writing things. It makes it pretty easy to use gettext for translating the desktop &amp; metainfo files for examples, installing the icons at right place and so on. Features that Cargo can’t provide, at least, not in a simple way.</p>
+<p>First step would be adding a <code>meson.build</code> files at the the same level as our main <code>Cargo.toml</code> in case your application is built split into different workspaces.</p>
+<pre data-lang="meson" style="background-color:#2e3440;color:#d8dee9;" class="language-meson "><code class="language-meson" data-lang="meson"><span>project(&#39;rust-flatpak&#39;,
+</span><span>        &#39;rust&#39;,
+</span><span>        version: &#39;0.1.0&#39;)
+</span></code></pre>
+<p>We started by defining our dependencies here, it might seems repetitive to have that here even if we do specify that in <code>Cargo.toml</code>, but it’s different. GTK is a a C library, and GTK Rust bindings just links to the library while providing a nice Rust wrapper around the C one. So you can’t build the application if those libraries can’t be detected by Cargo. Meson allows you to check that they are actually available before starting the build.</p>
+<pre data-lang="meson" style="background-color:#2e3440;color:#d8dee9;" class="language-meson "><code class="language-meson" data-lang="meson"><span>dependency(&#39;glib-2.0&#39;)
+</span><span>dependency(&#39;gio-2.0&#39;)
+</span><span>dependency(&#39;gtk+-3.0&#39;)
+</span></code></pre>
+<p>Let’s create a <code>data</code> directory and put our desktop, metainfo files and icons on it. You can name it differently, it’s just a convention.</p>
+<p>We need to tell Meson to check the build receipt we will have in <code>src</code> and <code>data</code></p>
+<pre data-lang="meson" style="background-color:#2e3440;color:#d8dee9;" class="language-meson "><code class="language-meson" data-lang="meson"><span>subdir(&#39;data&#39;)
+</span><span>subdir(&#39;src&#39;)
+</span></code></pre>
+<figure>
+    <img src="&#x2F;posts&#x2F;8-how-to-flatpak-a-rust-application&#x2F;Screenshot-from-2020-02-08-21-14-06.png" >
+    
+    <figcaption>Current files structure</figcaption>
+    
+</figure>
+<p>Let’s start by telling Meson how to install the files under <code>data</code></p>
+<pre data-lang="meson" style="background-color:#2e3440;color:#d8dee9;" class="language-meson "><code class="language-meson" data-lang="meson"><span>datadir = get_option(&#39;prefix&#39;) / get_option(&#39;datadir&#39;)
+</span><span>
+</span><span>application_id = &#39;com.belmoussaoui.RustFlatpak&#39;
+</span><span># Read more &lt;https://mesonbuild.com/Reference-manual.html#install_data&gt;
+</span><span>
+</span><span>install_data(
+</span><span>    &#39;@0@.desktop&#39;.format(application_id),
+</span><span>    install_dir: datadir / &#39;applications&#39;
+</span><span>)
+</span><span>
+</span><span>install_data(
+</span><span>    &#39;@0@.metainfo.xml&#39;.format(application_id),
+</span><span>    install_dir: datadir / &#39;metainfo&#39;
+</span><span>)
+</span><span>
+</span><span>install_data(
+</span><span>    &#39;@0@.svg&#39;.format(application_id),
+</span><span>    install_dir: datadir / &#39;icons&#39; / &#39;hicolor&#39; / &#39;scalable&#39; / &#39;apps&#39;
+</span><span>)
+</span></code></pre>
+<p>You can notice that we are using <code>get_option</code> to get the prefix and datadir which could be defined at build time by passing <code>--prefix=/usr --datadir=share</code>.</p>
+<p>Now, to the most complicated part of this, making Cargo &amp; Meson happy friends. We can easily call Cargo from Meson and build our application, but we would like to define <code>$CARGO_HOME</code> during build, so we won’t have to re-download everything every time we rebuild the Flatpak. Sadly, ninja, “the build backend” used by Meson doesn’t support setting an env variable for a custom target. Until that’s fixed in both, we need to call a bash script from Meson that does call Cargo for us.</p>
+<pre data-lang="meson" style="background-color:#2e3440;color:#d8dee9;" class="language-meson "><code class="language-meson" data-lang="meson"><span>sources = [
+</span><span>    &#39;main.rs&#39;,
+</span><span>]
+</span><span>
+</span><span>cargo_script = find_program(join_paths(meson.source_root(), &#39;build-aux/cargo.sh&#39;))
+</span><span>cargo_release = custom_target(
+</span><span>  &#39;cargo-build&#39;,
+</span><span>  build_by_default: true,
+</span><span>  input: sources,
+</span><span>  output: meson.project_name(),
+</span><span>  console: true,
+</span><span>  install: true,
+</span><span>  install_dir: get_option(&#39;bindir&#39;),
+</span><span>  command: [
+</span><span>    cargo_script,
+</span><span>    meson.build_root(),
+</span><span>    meson.source_root(),
+</span><span>    &#39;@OUTPUT@&#39;,
+</span><span>    get_option(&#39;buildtype&#39;),
+</span><span>    meson.project_name(),
+</span><span>  ]
+</span><span>)
+</span></code></pre>
+<p>And by convention I put the script to call under <code>build-aux/cargo.sh</code></p>
+<p>The content of the file should be</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;">#!/bin/sh
+</span><span>
+</span><span style="color:#81a1c1;">export </span><span>MESON_BUILD_ROOT</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>1</span><span style="color:#a3be8c;">&quot;
+</span><span style="color:#81a1c1;">export </span><span>MESON_SOURCE_ROOT</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>2</span><span style="color:#a3be8c;">&quot;
+</span><span style="color:#81a1c1;">export </span><span>CARGO_TARGET_DIR</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>MESON_BUILD_ROOT</span><span style="color:#a3be8c;">&quot;/target
+</span><span style="color:#81a1c1;">export </span><span>CARGO_HOME</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>CARGO_TARGET_DIR</span><span style="color:#a3be8c;">&quot;/cargo-home
+</span><span style="color:#81a1c1;">export </span><span>OUTPUT</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>3</span><span style="color:#a3be8c;">&quot;
+</span><span style="color:#81a1c1;">export </span><span>BUILDTYPE</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>4</span><span style="color:#a3be8c;">&quot;
+</span><span style="color:#81a1c1;">export </span><span>APP_BIN</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>5</span><span style="color:#a3be8c;">&quot;
+</span><span>
+</span><span>
+</span><span style="color:#81a1c1;">if </span><span style="color:#88c0d0;">[[ </span><span style="color:#81a1c1;">$</span><span>BUILDTYPE </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&quot;release&quot; </span><span style="color:#88c0d0;">]]
+</span><span style="color:#81a1c1;">then
+</span><span>    </span><span style="color:#88c0d0;">echo </span><span style="color:#a3be8c;">&quot;RELEASE MODE&quot;
+</span><span>    </span><span style="color:#88c0d0;">cargo</span><span> build --manifest-path </span><span style="color:#81a1c1;">\
+</span><span>        </span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>MESON_SOURCE_ROOT</span><span style="color:#a3be8c;">&quot;</span><span>/Cargo.toml --release </span><span style="color:#81a1c1;">&amp;</span><span style="color:#88c0d0;">amp</span><span>;</span><span style="color:#81a1c1;">&amp;</span><span style="color:#88c0d0;">amp</span><span style="color:#81a1c1;">; \
+</span><span>        </span><span style="color:#88c0d0;">cp </span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>CARGO_TARGET_DIR</span><span style="color:#a3be8c;">&quot;</span><span>/release/</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>APP_BIN</span><span style="color:#a3be8c;">&quot; &quot;</span><span style="color:#81a1c1;">$</span><span>OUTPUT</span><span style="color:#a3be8c;">&quot;
+</span><span style="color:#81a1c1;">else
+</span><span>    </span><span style="color:#88c0d0;">echo </span><span style="color:#a3be8c;">&quot;DEBUG MODE&quot;
+</span><span>    </span><span style="color:#88c0d0;">cargo</span><span> build --manifest-path </span><span style="color:#81a1c1;">\
+</span><span>        </span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>MESON_SOURCE_ROOT</span><span style="color:#a3be8c;">&quot;</span><span>/Cargo.toml --verbose </span><span style="color:#81a1c1;">&amp;</span><span style="color:#88c0d0;">amp</span><span>;</span><span style="color:#81a1c1;">&amp;</span><span style="color:#88c0d0;">amp</span><span style="color:#81a1c1;">; \
+</span><span>        </span><span style="color:#88c0d0;">cp </span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>CARGO_TARGET_DIR</span><span style="color:#a3be8c;">&quot;</span><span>/debug/</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>APP_BIN</span><span style="color:#a3be8c;">&quot; &quot;</span><span style="color:#81a1c1;">$</span><span>OUTPUT</span><span style="color:#a3be8c;">&quot;
+</span><span style="color:#81a1c1;">fi
+</span></code></pre>
+<p>We should have everything by now, and the latest step would be preparing our Flatpak manifest.</p>
+<p>We can try that our Meson build is working by typing</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">meson</span><span> _builddir --prefix</span><span style="color:#81a1c1;">=</span><span>/tmp
+</span><span style="color:#88c0d0;">ninja</span><span> -C _builddir 
+</span></code></pre>
+<p>Before we start writing our Flatpak manifest, please take a short tour at <a href="https://docs.flatpak.org/en/latest/">https://docs.flatpak.org/en/latest/</a> to read about the basics of Flatpak.</p>
+<p>We will be writing our manifest in JSON, you could use a YAML file too.</p>
+<h4 id="flatpak-manifest">Flatpak Manifest</h4>
+<pre data-lang="json" style="background-color:#2e3440;color:#d8dee9;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>    </span><span style="color:#a3be8c;">&quot;app-id&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;com.belmoussaoui.RustFlatpak&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;runtime&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;org.freedesktop.Platform&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;runtime-version&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;20.08&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;sdk&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;org.freedesktop.Sdk&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;sdk-extensions&quot; </span><span style="color:#eceff4;">: </span><span>[
+</span><span>        </span><span style="color:#a3be8c;">&quot;org.freedesktop.Sdk.Extension.rust-stable&quot;
+</span><span>    ]</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;command&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;rust-flatpak&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;finish-args&quot;</span><span style="color:#eceff4;">: </span><span>[
+</span><span>        </span><span style="color:#a3be8c;">&quot;--share=ipc&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;--socket=fallback-x11&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;--socket=wayland&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;--device=dri&quot;
+</span><span>    ]</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;build-options&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>        </span><span style="color:#a3be8c;">&quot;append-path&quot; </span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;/usr/lib/sdk/rust-stable/bin&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;build-args&quot; </span><span style="color:#eceff4;">: </span><span>[
+</span><span>            </span><span style="color:#a3be8c;">&quot;--share=network&quot;
+</span><span>        ]</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;env&quot; </span><span style="color:#eceff4;">: </span><span>{
+</span><span>            </span><span style="color:#a3be8c;">&quot;CARGO_HOME&quot; </span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;/run/build/rust-flatpak/cargo&quot;
+</span><span>        }
+</span><span>    }</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;modules&quot;</span><span style="color:#eceff4;">: </span><span>[
+</span><span>        {
+</span><span>            </span><span style="color:#a3be8c;">&quot;name&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;rust-flatpak&quot;</span><span style="color:#eceff4;">,
+</span><span>            </span><span style="color:#a3be8c;">&quot;buildsystem&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;meson&quot;</span><span style="color:#eceff4;">,
+</span><span>            </span><span style="color:#a3be8c;">&quot;sources&quot;</span><span style="color:#eceff4;">: </span><span>[
+</span><span>                {
+</span><span>                    </span><span style="color:#a3be8c;">&quot;type&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;dir&quot;</span><span style="color:#eceff4;">,
+</span><span>                    </span><span style="color:#a3be8c;">&quot;path&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;../&quot;
+</span><span>                }
+</span><span>            ]
+</span><span>        }
+</span><span>    ]
+</span><span>}
+</span></code></pre>
+<p>Building our application using Flatpak isn’t hard, as the freedesktop runtime gives us already all what we could need to build our app, on top of it we have the Rust SDK extension that adds Rust support.</p>
+<p>You can notice that the application is built with network access from the build-args. Flatpak by default, downloads all the sources and don’t give network access to anything during the build process. Except we need Cargo to be able to download our dependencies. Such manifest is the way to go if you’re using it for CI. If your plan is to use it to distribute your application on a Flatpak based store like Flathub, all the dependencies have to be downloaded before starting the build.</p>
+<p>Meson allows you to create a tarball of your application using <code>ninja -C _builddir dist</code>. Except, we have to tell Meson that we need to bundle all our Cargo dependencies too, basically calling <code>cargo vendor</code> and moving the tarballs to <code>$DIST</code>.</p>
+<pre data-lang="meson" style="background-color:#2e3440;color:#d8dee9;" class="language-meson "><code class="language-meson" data-lang="meson"><span>meson.add_dist_script(
+</span><span>  &#39;build-aux/dist-vendor.sh&#39;,
+</span><span>  meson.build_root() / &#39;meson-dist&#39; / meson.project_name() + &#39;-&#39; + version,
+</span><span>  meson.source_root()
+</span><span>)
+</span></code></pre>
+<p>And we add our <code>dist-vendor</code> script</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#616e88;">#!/bin/sh
+</span><span style="color:#81a1c1;">export </span><span>DIST</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>1</span><span style="color:#a3be8c;">&quot;
+</span><span style="color:#81a1c1;">export </span><span>SOURCE_ROOT</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>2</span><span style="color:#a3be8c;">&quot;
+</span><span>
+</span><span style="color:#88c0d0;">cd </span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>SOURCE_ROOT</span><span style="color:#a3be8c;">&quot;
+</span><span style="color:#88c0d0;">mkdir </span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>DIST</span><span style="color:#a3be8c;">&quot;</span><span>/.cargo
+</span><span style="color:#88c0d0;">cargo</span><span> vendor </span><span style="color:#81a1c1;">| </span><span style="color:#88c0d0;">sed </span><span style="color:#a3be8c;">&#39;s/^directory = &quot;.*&quot;/directory = &quot;vendor&quot;/g&#39; </span><span style="color:#81a1c1;">&gt; $</span><span>DIST/.cargo/config
+</span><span style="color:#616e88;"># Move vendor into dist tarball directory
+</span><span style="color:#88c0d0;">mv</span><span> vendor </span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">$</span><span>DIST</span><span style="color:#a3be8c;">&quot;
+</span></code></pre>
+<p>If we want to create a new release and publish it on Falthub, all we have to do is generate a tarball and upload it to our tagged release on Gitlab/Github/somewhere.</p>
+<pre style="background-color:#2e3440;color:#d8dee9;"><code><span>meson -C _builddir
+</span><span>ninja -C _builddir/ dist
+</span></code></pre>
+<p>Which should create a tarball under <code>_builddir/meson-dist/</code>. We can now remove the network access from build-argsand replace our source from a git type to an archive one and we should be ready to publish it on Flathub for a review!</p>
+<h3 id="using-flatpak-cargo-generator">Using flatpak-cargo-generator</h3>
+<p>Flatpak cargo generator is one of the <a href="https://github.com/flatpak/flatpak-builder-tools">many</a> community made scripts that allows you to generate a Flatpak manifest of all the dependencies of your application for various programming languages.</p>
+<p>The scripts takes your <code>Cargo.lock</code> as an input and generates a manifest that Flatpak can understand from it. Which could work perfectly fine in case you’re using Meson too (you just won’t have to create a dist script for bundling Cargo dependencies).</p>
+<p>You can just grab the <code>flatpak-cargo-generator</code> script from <a href="https://github.com/flatpak/flatpak-builder-tools/blob/master/cargo/flatpak-cargo-generator.py">https://github.com/flatpak/flatpak-builder-tools/blob/master/cargo/flatpak-cargo-generator.py</a> and run it with</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">python3</span><span> ./flatpak-cargo-generator.py ./Cargo.lock -o cargo-sources.json
+</span></code></pre>
+<p>The script depends on the python module <code>siphash</code></p>
+<pre data-lang="json" style="background-color:#2e3440;color:#d8dee9;" class="language-json "><code class="language-json" data-lang="json"><span>{
+</span><span>    </span><span style="color:#a3be8c;">&quot;app-id&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;com.belmoussaoui.RustFlatpak&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;runtime&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;org.freedesktop.Platform&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;runtime-version&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;20.08&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;sdk&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;org.freedesktop.Sdk&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;sdk-extensions&quot; </span><span style="color:#eceff4;">: </span><span>[
+</span><span>        </span><span style="color:#a3be8c;">&quot;org.freedesktop.Sdk.Extension.rust-stable&quot;
+</span><span>    ]</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;command&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;rust-flatpak&quot;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;finish-args&quot;</span><span style="color:#eceff4;">: </span><span>[
+</span><span>        </span><span style="color:#a3be8c;">&quot;--share=ipc&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;--socket=fallback-x11&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;--socket=wayland&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;--device=dri&quot;
+</span><span>    ]</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;build-options&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>        </span><span style="color:#a3be8c;">&quot;append-path&quot; </span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;/usr/lib/sdk/rust-stable/bin&quot;</span><span style="color:#eceff4;">,
+</span><span>        </span><span style="color:#a3be8c;">&quot;env&quot; </span><span style="color:#eceff4;">: </span><span>{
+</span><span>            </span><span style="color:#a3be8c;">&quot;CARGO_HOME&quot; </span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;/run/build/rust-flatpak/cargo&quot;
+</span><span>        }
+</span><span>    }</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&quot;modules&quot;</span><span style="color:#eceff4;">: </span><span>[
+</span><span>        {
+</span><span>            </span><span style="color:#a3be8c;">&quot;name&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;rust-flatpak&quot;</span><span style="color:#eceff4;">,
+</span><span>            </span><span style="color:#a3be8c;">&quot;buildsystem&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;simple&quot;</span><span style="color:#eceff4;">,
+</span><span>            </span><span style="color:#a3be8c;">&quot;build-commands&quot;</span><span style="color:#eceff4;">: </span><span>[
+</span><span>                </span><span style="color:#a3be8c;">&quot;cargo --offline fetch --manifest-path Cargo.toml --verbose&quot;</span><span style="color:#eceff4;">,
+</span><span>                </span><span style="color:#a3be8c;">&quot;cargo --offline build --release --verbose&quot;</span><span style="color:#eceff4;">,
+</span><span>                </span><span style="color:#a3be8c;">&quot;install -Dm755 ./target/debug/rust-flatpak -t /app/bin/&quot;</span><span style="color:#eceff4;">,
+</span><span>                </span><span style="color:#a3be8c;">&quot;install -Dm644 ./data/${FLATPAK_ID}.metainfo.xml -t /app/share/metainfo/&quot;</span><span style="color:#eceff4;">,
+</span><span>                </span><span style="color:#a3be8c;">&quot;install -Dm644 ./data/${FLATPAK_ID}.desktop -t /app/share/applications/&quot;</span><span style="color:#eceff4;">,
+</span><span>                </span><span style="color:#a3be8c;">&quot;install -Dm644 ./data/${FLATPAK_ID}.svg -t /app/share/icons/hicolor/scalable/apps/&quot;
+</span><span>            ]</span><span style="color:#eceff4;">,
+</span><span>            </span><span style="color:#a3be8c;">&quot;sources&quot;</span><span style="color:#eceff4;">: </span><span>[
+</span><span>                {
+</span><span>                    </span><span style="color:#a3be8c;">&quot;type&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;dir&quot;</span><span style="color:#eceff4;">,
+</span><span>                    </span><span style="color:#a3be8c;">&quot;path&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;../&quot;
+</span><span>                }</span><span style="color:#eceff4;">,
+</span><span>                </span><span style="color:#a3be8c;">&quot;generated-sources.json&quot;
+</span><span>            ]
+</span><span>        }
+</span><span>    ]
+</span><span>}
+</span></code></pre>
+<p>Where the <code>generated-sources.json</code> is a the generated file using <code>flatpak-cargo-generator</code></p>
+<h3 id="trying-your-flatpak-manifest">Trying your Flatpak manifest</h3>
+<p>You can build and test the Flatpak package locally using flatpak-builder</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">flatpak-builder</span><span> --install repo build-aux/com.belmoussaoui.RustFlatpak.json --force-clean --user -y
+</span></code></pre>
+<p>You can run the application later using</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">flatpak</span><span> run com.belmoussaoui.RustFlatpak
+</span></code></pre>
+<p>Publishing the application later on Flathub should be straight forward. You can read more about that from here</p>
+<h2 id="bonus-gitlab-ci-github-actions-bundles">Bonus: Gitlab CI/Github Actions bundles</h2>
+<p>At GNOME we have a CI template that makes integrating a Flatpak pipeline pretty easy. It requires using Meson as a build system, but you can easily tweak that to your build preferences. Sadly, we can’t achieve similar results easily with Github Actions for now.</p>
+<pre data-lang="yaml" style="background-color:#2e3440;color:#d8dee9;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#8fbcbb;">include</span><span style="color:#eceff4;">:
+</span><span>  - </span><span style="color:#8fbcbb;">project</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&#39;gnome/citemplates&#39;
+</span><span>    </span><span style="color:#8fbcbb;">file</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&#39;flatpak/flatpak-ci-initiative-sdk-extensions.yml&#39;
+</span><span>
+</span><span style="color:#8fbcbb;">flatpak</span><span style="color:#eceff4;">:
+</span><span>  </span><span style="color:#8fbcbb;">image</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&#39;registry.gitlab.gnome.org/gnome/gnome-runtime-images/rust_bundle:3.38&#39;
+</span><span>  </span><span style="color:#8fbcbb;">variables</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">BUNDLE</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;rust-flatpak-nightly.flatpak&quot;
+</span><span>    </span><span style="color:#8fbcbb;">MANIFEST_PATH</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;build-aux/com.belmoussaoui.RustFlatpak.json&quot;
+</span><span>    </span><span style="color:#8fbcbb;">FLATPAK_MODULE</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;rust-flatpak&quot;
+</span><span>    </span><span style="color:#8fbcbb;">APP_ID</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;com.belmoussaoui.RustFlatpak&quot;
+</span><span>    </span><span style="color:#8fbcbb;">RUNTIME_REPO</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;https://flathub.org/repo/flathub.flatpakrepo&quot;
+</span><span>  </span><span style="color:#8fbcbb;">extends</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&#39;.flatpak&#39;
+</span></code></pre>
+<p>If you're using Github , you can use the <a href="https://github.com/marketplace/actions/flatpak-builder">flatpak-github-actions</a>. See below for an example</p>
+<pre data-lang="yaml" style="background-color:#2e3440;color:#d8dee9;" class="language-yaml "><code class="language-yaml" data-lang="yaml"><span style="color:#81a1c1;">on</span><span style="color:#eceff4;">:
+</span><span>  </span><span style="color:#8fbcbb;">push</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">branches</span><span style="color:#eceff4;">: </span><span>[</span><span style="color:#a3be8c;">master</span><span>]
+</span><span>  </span><span style="color:#8fbcbb;">pull_request</span><span style="color:#eceff4;">:
+</span><span style="color:#8fbcbb;">name</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">CI
+</span><span style="color:#8fbcbb;">jobs</span><span style="color:#eceff4;">:
+</span><span>  </span><span style="color:#8fbcbb;">flatpak-builder</span><span style="color:#eceff4;">:
+</span><span>    </span><span style="color:#8fbcbb;">name</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;Flatpak Builder&quot;
+</span><span>    </span><span style="color:#8fbcbb;">runs-on</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">ubuntu-latest
+</span><span>    </span><span style="color:#8fbcbb;">container</span><span style="color:#eceff4;">:
+</span><span>      </span><span style="color:#8fbcbb;">image</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">bilelmoussaoui/flatpak-github-actions:gnome-3.38
+</span><span>      </span><span style="color:#8fbcbb;">options</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">--privileged
+</span><span>    </span><span style="color:#8fbcbb;">steps</span><span style="color:#eceff4;">:
+</span><span>    - </span><span style="color:#8fbcbb;">uses</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">actions/checkout@v2
+</span><span>    - </span><span style="color:#8fbcbb;">uses</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">bilelmoussaoui/flatpak-github-actions@v1
+</span><span>      </span><span style="color:#8fbcbb;">with</span><span style="color:#eceff4;">:
+</span><span>        </span><span style="color:#8fbcbb;">bundle</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;rust-flatpak-nightly.flatpak&quot;
+</span><span>        </span><span style="color:#8fbcbb;">manifest-path</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;build-aux/com.belmoussaoui.RustFlatpak.json&quot;
+</span></code></pre>
+<p>That should be it 🙂 You should have the basics to publish a simple Rust application as a Flatpak. Useful links:</p>
+<ul>
+<li>
+<p>Flatpak Docs: <a href="https://docs.flatpak.org/en/latest/">https://docs.flatpak.org/en/latest/</a></p>
+</li>
+<li>
+<p>Flatpak Builder Tools: <a href="https://github.com/flatpak/flatpak-builder-tools">https://github.com/flatpak/flatpak-builder-tools</a></p>
+</li>
+<li>
+<p>Meson: <a href="https://mesonbuild.com/">https://mesonbuild.com/</a></p>
+</li>
+<li>
+<p>Flathub publishing guides: <a href="https://github.com/flathub/flathub/wiki/App-Submission">https://github.com/flathub/flathub/wiki/App-Submission</a></p>
+</li>
+<li>
+<p>GTK Rust bindings: <a href="https://gtk-rs.org/">https://gtk-rs.org/</a></p>
+</li>
+<li>
+<p>GTK + Rust + Meson + Flatpak template: <a href="https://gitlab.gnome.org/bilelmoussaoui/gtk-rust-template">https://gitlab.gnome.org/bilelmoussaoui/gtk-rust-template</a></p>
+</li>
+</ul>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#creating-a-simple-application">Creating a simple application</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#packaging-related-files">Packaging related files</a>
+                    <ul>
+                        <li>
+                            <a class="toc-h3" href="#metainfo-file">Metainfo file</a>
+                        </li>
+                        <li>
+                            <a class="toc-h3" href="#desktop-file">Desktop file</a>
+                        </li>
+                        <li>
+                            <a class="toc-h3" href="#icon">Icon</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#flatpak">Flatpak!</a>
+                    <ul>
+                        <li>
+                            <a class="toc-h3" href="#using-meson-build-system">Using Meson Build System</a>
+                        </li>
+                        <li>
+                            <a class="toc-h3" href="#using-flatpak-cargo-generator">Using flatpak-cargo-generator</a>
+                        </li>
+                        <li>
+                            <a class="toc-h3" href="#trying-your-flatpak-manifest">Trying your Flatpak manifest</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#bonus-gitlab-ci-github-actions-bundles">Bonus: Gitlab CI&#x2F;Github Actions bundles</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script> 
+<script src="/js/outdate.js"></script> 
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

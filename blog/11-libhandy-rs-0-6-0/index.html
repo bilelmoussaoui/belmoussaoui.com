@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>libhandy-rs v0.6.0 is out!</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>libhandy-rs v0.6.0 is out!</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2020-07-09</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/rust"><i class="ri-hashtag ri-sm"></i><span>Rust</span></a>
+                </div>
+            </div>    
+
+            
+            
+            <p>Recently I kind of took over the maintainership of <a href="https://gitlab.gnome.org/World/Rust/libhandy-rs">libhandy-rs</a>, the Rust bindings of <a href="https://gitlab.gnome.org/gnome/libhandy">libhandy</a>. I have since then been preparing for a new release so that Rust &amp; GTK app developers can update to the <a href="https://gtk-rs.org/blog/2020/07/04/new-release.html">latest gtk-rs release</a> as soon as possible. I also heavily depend on it on my various little apps.</p>
+<p>The latest release which targets libhandy-0.0 v0.0.13 features various improvements:</p>
+<ul>
+<li>
+<p>Proper <a href="https://world.pages.gitlab.gnome.org/Rust/libhandy-rs/libhandy/">documentation</a> support, note that the docs are built from the main branch</p>
+</li>
+<li>
+<p>Builders support</p>
+</li>
+<li>
+<p>Generate more missing bindings</p>
+</li>
+<li>
+<p>Starting from this release, libhandy-rs have a <code>libhandy::init()</code> which should be called right after <code>gtk::init()</code></p>
+</li>
+</ul>
+<p>The next release of libhandy-rs will be targeting libhandy-1 and will hopefully adds the latest missing bits for a complete Rust bindings of libhandy.</p>
+<p>A big thanks to the GTK-rs community, I learned so much stuff by contributing :)</p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>   
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

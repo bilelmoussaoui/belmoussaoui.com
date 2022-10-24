@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>GNOME Initiative: AppData update</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>GNOME Initiative: AppData update</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2019-01-14</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/gnome"><i class="ri-hashtag ri-sm"></i><span>GNOME</span></a>
+                </div>
+            </div>   
+
+            <blockquote id="outdate_warn" class="note hidden" data-days="120"
+                data-text1="Note: This article was last updated " data-text2=" days ago and may be out of date.">
+                <i class="ri-alarm-warning-line ri-lg"></i><span></span>
+            </blockquote>
+            
+            <p>Hey everyone! Welcome to my first blog article on my brand new website. It has been a few months since I bought this domain name but I didn't have the opportunity to set a simple WordPress on it. I will try to keep it up to date and share various articles about stuff I love and enjoy during my free time.</p>
+<h2 id="the-gnome-initiatives-what-s-it">The GNOME/initiatives, what's it?</h2>
+<p>A small description from the Wiki page of the iniatives repository on GNOME's Gitlab instance: &quot;Initiatives are cross-project goals that have wide acceptance inside the GNOME community as desired.&quot;</p>
+<h2 id="what-s-the-appdata-update-initiative">What's the AppData update initiative?</h2>
+<p>It's an initiative that I have started the day after I joined the GNOME Foundation as a member and I have been working days before that. It aims to provide an up to date AppData file, which is a file shipped with the application to provide information about the application the user is going to install like the screenshots, a description of the application, release change log and other details.</p>
+<p>Those files were in some &quot;unmaintained&quot; projects out of date, had old screenshots or maybe an old format of the AppData file that doesn't follow the new <a href="https://freedesktop.org/software/appstream/docs/chap-Quickstart.html">FreeDesktop specifications</a>. I started sending patches to fix those files on various of GNOME apps/games; I lost track of what I have already fixed and what still needs to be done, so I took the opportunity to start an initiative to provide up to date and validated AppData files.</p>
+<h2 id="the-goals-of-the-appdata-update-initiative">The Goals of the AppData update initiative</h2>
+<p>I have set three goals for each GNOME application:</p>
+<ul>
+<li>
+<p>A unified application ID, which is basically the usage of the application ID as a filename for the AppData, Desktop, icons files shipped with the application itself. If we take Nautilus for example, it should ship an AppData file named <code>org.gnome.Nautilus.appdata.xml</code>, a desktop file named <code>org.gnome.Nautilus.desktop</code> and a bunch of icons prefixed by <code>org.gnome.Nautilus</code>.</p>
+</li>
+<li>
+<p>An up to date AppData file: the goal here is to make sure we provide all the information the user might need on the AppData file, like the URL to report issues, to donate to GNOME, the latest release of the application and other informative, yet useful for users. Which are shown later by GNOME Software or other alternatives?</p>
+</li>
+<li>
+<p>A validated AppData/Desktop files: The desktop file can be validated using a tool called <code>desktop-file-validate</code>, the same thing for the AppData file using <code>appstream-util</code>. The idea is to add two tests to the meson tests in order to always assure we are shipping a valid and up to date Desktop and AppData file.</p>
+</li>
+</ul>
+<h2 id="how-things-are-going-on-so-far">How things are going on so far?</h2>
+<p>As you can see in <a href="https://gitlab.gnome.org/GNOME/Initiatives/issues/8">AppData update initiative</a> there's still a lot of work to be done, the list of application is not finished yet either. You can help by opening an issue or send a merge request to a project with an updated AppData file, tests to validate AppData/Desktop files or just pointing them out to me and will try to figure out some free time to deal with that.</p>
+<p>If you want to help making better free and open source software a reality, start contributing now.</p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#the-gnome-initiatives-what-s-it">The GNOME&#x2F;initiatives, what&#x27;s it?</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#what-s-the-appdata-update-initiative">What&#x27;s the AppData update initiative?</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#the-goals-of-the-appdata-update-initiative">The Goals of the AppData update initiative</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#how-things-are-going-on-so-far">How things are going on so far?</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script> 
+<script src="/js/outdate.js"></script> 
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

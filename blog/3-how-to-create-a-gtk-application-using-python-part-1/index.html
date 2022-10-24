@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>How to create a GTK application using Python – Part 1</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>How to create a GTK application using Python – Part 1</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2019-05-13</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/gnome"><i class="ri-hashtag ri-sm"></i><span>GNOME</span></a><a class="tag" href="https://belmoussaoui.com/tags/python"><i class="ri-hashtag ri-sm"></i><span>Python</span></a>
+                </div>
+            </div>   
+
+            <blockquote id="outdate_warn" class="note hidden" data-days="120"
+                data-text1="Note: This article was last updated " data-text2=" days ago and may be out of date.">
+                <i class="ri-alarm-warning-line ri-lg"></i><span></span>
+            </blockquote>
+            
+            <p>Hello everyone, this new article is a start of a new era on my blog as I will start writing few articles to share some tips or like on this one, a series of articles to build something together from scratch.</p>
+<p>Writing a GUI(graphical user interface) application using Python isn't something new as you can already use a long list of libraries that allow you doing that. The difference from what are we going to do here is that we are going to use a list of GNOME libraries like GTK. Once the application is usable, we are going to add Meson as a build system and ship it on Flathub as a Flatpak. We will also talk a bit about application integration by following Freedesktop standards like shipping a metainfo file that describes the application, a desktop file, beautiful icons that follows GNOME design guidelines.</p>
+<p>The most simple use case is a simple Todo list that should allow us to add new tasks to a list, remove them, mark them as done/undone, search on the tasks list, we will be adding features with time like using Handy (libhandy) to make the application mobile ready.</p>
+<h2 id="requirements">Requirements</h2>
+<p>We will need a few things in order to start hacking, the first thing is installing GNOME Builder. It's the IDE we will be using, it integrates a few useful features that we will be using like one click to build, run the application or the possibility to change the UI of our application easily as it integrates a part of Glade.</p>
+<h3 id="install-gnome-builder">Install GNOME Builder</h3>
+<p><img src="/posts/3-how-to-create-a-gtk-application-using-python-part-1/org.gnome.Builder.png" alt="GNOME Builder" /></p>
+<p>You won't be needing to install anything else. Every library that we might need like GTK, python-gobject, gobject-introspection, flatpak-builder, Meson are already shipped within Freedesktop/GNOME Runtime. We will be using the latest stable GNOME Runtime 3.32 which should be already installed on your system if you have installed Builder from Flathub (I do recommend you to do that instead of using the &quot;normal&quot; packaging formats). Otherwise, you can get that by typing in Terminal:</p>
+<p><img src="/posts/3-how-to-create-a-gtk-application-using-python-part-1/Screenshot-from-2019-05-13-18-33-20.png" alt="Install GNOME SDK" /></p>
+<h2 id="getting-started">Getting started</h2>
+<p>Let's fire up GNOME Builder and create a new project. Once Builder's main window is shown, you can see a &quot;Start a new project&quot; button</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;3-how-to-create-a-gtk-application-using-python-part-1&#x2F;Screenshot-from-2019-05-13-18-37-32.png" >
+    
+    <figcaption>GNOME Builder - Main Window</figcaption>
+    
+</figure>
+<p>Once we have clicked on that, we get a list of different languages and projects types to choose from. We are going to select Python and GNOME Application as a template, we also need to choose a name for our project and an application ID. The Application ID should follow the reverse domain name standards, you can read more about that here on the GNOME Wiki</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;3-how-to-create-a-gtk-application-using-python-part-1&#x2F;Screenshot-from-2019-05-13-18-41-39.png" >
+    
+    <figcaption>GNOME Builder - Project configuration</figcaption>
+    
+</figure>
+<p>Before going through the list of files generated by Builder, we can check the result of what we have done so far by clicking on the run button or using CTRL + F5 shortcut.</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;3-how-to-create-a-gtk-application-using-python-part-1&#x2F;Screenshot-from-2019-05-13-19-19-21.png" >
+    
+    <figcaption>GNOME Builder - Header bar</figcaption>
+    
+</figure>
+<p>Builder will use the Flatpak manifest generated automatically to build and run the application, you can see the build progress by clicking on &quot;Build output&quot; tab</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;3-how-to-create-a-gtk-application-using-python-part-1&#x2F;Screenshot-from-2019-05-13-19-23-54.png" >
+    
+    <figcaption>GNOME Builder - Build output of Todo</figcaption>
+    
+</figure>
+<p>The build shouldn't take a long time (few seconds) and the current application should look like this</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;3-how-to-create-a-gtk-application-using-python-part-1&#x2F;Screenshot-from-2019-05-13-19-26-40.png" >
+    
+    <figcaption>GNOME Builder - GNOME Application Template for Python</figcaption>
+    
+</figure>
+<p>Now that we are sure that everything runs correctly, let's take a look at the list of files that were generated by Builder.</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">belmoussaoui@localhost </span><span style="color:#81a1c1;">~</span><span>/P/Todo </span><span style="color:#81a1c1;">&gt;</span><span> .
+</span><span style="color:#88c0d0;">├──</span><span> build-aux
+</span><span style="color:#88c0d0;">│</span><span>       └── meson
+</span><span style="color:#88c0d0;">│</span><span>           └── postinstall.py
+</span><span style="color:#88c0d0;">├──</span><span> com.belmoussaoui.Todo.json
+</span><span style="color:#88c0d0;">├──</span><span> COPYING
+</span><span style="color:#88c0d0;">├──</span><span> data
+</span><span style="color:#88c0d0;">│</span><span>       ├── com.belmoussaoui.Todo.appdata.xml.in
+</span><span style="color:#88c0d0;">│</span><span>       ├── com.belmoussaoui.Todo.desktop.in
+</span><span style="color:#88c0d0;">│</span><span>       ├── com.belmoussaoui.Todo.gschema.xml
+</span><span style="color:#88c0d0;">│</span><span>       └── meson.build
+</span><span style="color:#88c0d0;">├──</span><span> meson.build
+</span><span style="color:#88c0d0;">├──</span><span> po
+</span><span style="color:#88c0d0;">│</span><span>       ├── LINGUAS
+</span><span style="color:#88c0d0;">│</span><span>       ├── meson.build
+</span><span style="color:#88c0d0;">│</span><span>       └── POTFILES
+</span><span style="color:#88c0d0;">└──</span><span> src
+</span><span>    </span><span style="color:#88c0d0;">├──</span><span> __init__.py
+</span><span>    </span><span style="color:#88c0d0;">├──</span><span> main.py
+</span><span>    </span><span style="color:#88c0d0;">├──</span><span> meson.build
+</span><span>    </span><span style="color:#88c0d0;">├──</span><span> todo.gresource.xml
+</span><span>    </span><span style="color:#88c0d0;">├──</span><span> todo.in
+</span><span>    </span><span style="color:#88c0d0;">├──</span><span> window.py
+</span><span>    </span><span style="color:#88c0d0;">└──</span><span> window.ui
+</span><span>
+</span><span style="color:#88c0d0;">5</span><span> directories, 18 files
+</span></code></pre>
+<p>What does interest us for now is the source code of the application, which is under src directory.</p>
+<ul>
+<li>
+<p><code>main.py</code>: contains an Application which is a subclass of <code>Gtk.Application</code>, it allows us to set the application id that we have defined during the creation of the project and other attributes of an application. It also contains a <code>do_activate</code> function which is the function that will be executed once the application was activated.</p>
+</li>
+<li>
+<p><code>meson.build</code>: contains where those python files should be installed and how the gresource file should be built and installed</p>
+</li>
+<li>
+<p><code>todo.gresource.xml</code>: it's an XML file that defines the resources that our application needs like images, CSS files and UI files.</p>
+</li>
+<li>
+<p><code>todo.in</code>: is the file that will be installed under <code>$PREFIX/bin</code>, which is the path on your system where all the binaries get installed. It's a Python file that has a <code>.in</code> extension which means it's a file that will be configured during the build as we need to pass to our application where we have installed our resources, where we can find the translations files for our application and other configurations we might need.</p>
+</li>
+<li>
+<p><code>window.py</code>: is the main window widget, which is a subclass of <code>Gtk.ApplicationWindow</code></p>
+</li>
+<li>
+<p><code>window.ui</code>: is a file that defines which widgets our main window contains, it can be opened using Glade or GNOME Builder. You can edit the file either manually by writing the XML tags to define your widgets or just drag and drop your widgets if you open that file using Glade.</p>
+</li>
+</ul>
+<h3 id="the-ui-of-the-main-window">The UI of the main window</h3>
+<p>Now that we know where the widgets used in the main window are defined we can change those in order to fit our project. If we open the <code>window.ui</code> file in Builder, it opens the file in the design view, you can switch to the source view if you want to change the file manually.</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;3-how-to-create-a-gtk-application-using-python-part-1&#x2F;Screenshot-from-2019-05-14-11-51-14.png" >
+    
+    <figcaption>GNOME Builder - UI files designer</figcaption>
+    
+</figure>
+<p>Builder allow you to easily figure out which GTK Widgets are used in our UI file.</p>
+<figure>
+    <img src="&#x2F;posts&#x2F;3-how-to-create-a-gtk-application-using-python-part-1&#x2F;Screenshot-from-2019-05-14-11-54-23.png" >
+    
+    <figcaption>GNOME Builder - UI Widgets in the default GNOME application template</figcaption>
+    
+</figure>
+<p>What we would like to do is to change the &quot;Hello World&quot; label to something else. The widget that fits our needs here is a <code>ListBox</code> which is basically a vertically oriented container that we can fill with any widget we want. You can right click on any widget and click on delete, so let's remove the label widget and add a <code>GtkListBox</code> instead.</p>
+<p><img src="/posts/3-how-to-create-a-gtk-application-using-python-part-1/Screenshot-from-2019-05-14-12-00-15.png" alt="Widgets selection" /></p>
+<p>We can change the attributes of the selected widget from the right panel. The only thing we will be changing for now is the ID which is the identifier that will allow us to access and change the widget manually from our <code>window.py</code> file.</p>
+<p><img src="/posts/3-how-to-create-a-gtk-application-using-python-part-1/Screenshot-from-2019-05-14-12-06-31.png" alt="Widget Properties" /></p>
+<p>As we are using <code>Gtk.Template</code> which basically let you inherit a widget in your class while keeping the widgets, their attributes and how they should behave defined in the UI file.</p>
+<pre data-lang="python" style="background-color:#2e3440;color:#d8dee9;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#81a1c1;">from </span><span>gi</span><span style="color:#81a1c1;">.</span><span>repository </span><span style="color:#81a1c1;">import </span><span>Gtk
+</span><span>
+</span><span style="color:#d08770;">@</span><span>Gtk</span><span style="color:#81a1c1;">.</span><span>Template(resource_path</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&#39;/com/belmoussaoui/Todo/window.ui&#39;</span><span>)
+</span><span style="color:#81a1c1;">class </span><span style="color:#8fbcbb;">TodoWindow</span><span>(</span><span style="color:#8fbcbb;">Gtk</span><span style="color:#81a1c1;">.</span><span style="color:#8fbcbb;">ApplicationWindow</span><span>):
+</span><span>    __gtype_name__ </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&#39;TodoWindow&#39;
+</span><span>
+</span><span>    label </span><span style="color:#81a1c1;">= </span><span>Gtk</span><span style="color:#81a1c1;">.</span><span>Template</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">Child</span><span>()
+</span><span>
+</span><span>    </span><span style="color:#81a1c1;">def </span><span style="color:#88c0d0;">__init__</span><span>(self</span><span style="color:#eceff4;">, </span><span style="color:#81a1c1;">**</span><span>kwargs):
+</span><span>        </span><span style="font-style:italic;color:#88c0d0;">super</span><span>()</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">__init__</span><span>(</span><span style="color:#81a1c1;">**</span><span>kwargs)
+</span></code></pre>
+<p>If we look closely to the content of the <code>window.py</code> we can see that we are setting the Template <code>resource_path</code> using a <code>Gtk.Template</code> as a decorator. We need also to set a <code>__gtype_name__</code> to define the name the composite widget we are going to use from the UI file.</p>
+<p><img src="/posts/3-how-to-create-a-gtk-application-using-python-part-1/Screenshot-from-2019-05-14-12-16-39.png" alt="Widget Name" /></p>
+<p>For every child of our TodoWindow widget that we would like to have access to, all we need to do is to add a new property to our class, the name of the property must be the ID we have given to the widget and it should be a <code>Gtk.Template.Child</code>.</p>
+<p>The reason why we would like to access to the <code>todo_list</code> widget is we will be reading the different tasks from a database and we would like to fill the todo list from that.</p>
+<p>Let's add a bunch of random tasks manually to see how things look like. We are going to use a GtkLabel for now and update that later to use a widget that we are going to create ourselves.</p>
+<pre data-lang="python" style="background-color:#2e3440;color:#d8dee9;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#81a1c1;">from </span><span>gi</span><span style="color:#81a1c1;">.</span><span>repository </span><span style="color:#81a1c1;">import </span><span>Gtk
+</span><span>
+</span><span style="color:#d08770;">@</span><span>Gtk</span><span style="color:#81a1c1;">.</span><span>Template(resource_path</span><span style="color:#81a1c1;">=</span><span style="color:#a3be8c;">&#39;/com/belmoussaoui/Todo/window.ui&#39;</span><span>)
+</span><span style="color:#81a1c1;">class </span><span style="color:#8fbcbb;">TodoWindow</span><span>(</span><span style="color:#8fbcbb;">Gtk</span><span style="color:#81a1c1;">.</span><span style="color:#8fbcbb;">ApplicationWindow</span><span>):
+</span><span>    __gtype_name__ </span><span style="color:#81a1c1;">= </span><span style="color:#a3be8c;">&#39;TodoWindow&#39;
+</span><span>
+</span><span>    todo_list </span><span style="color:#81a1c1;">= </span><span>Gtk</span><span style="color:#81a1c1;">.</span><span>Template</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">Child</span><span>()
+</span><span>
+</span><span>    </span><span style="color:#81a1c1;">def </span><span style="color:#88c0d0;">__init__</span><span>(self</span><span style="color:#eceff4;">, </span><span style="color:#81a1c1;">**</span><span>kwargs):
+</span><span>        </span><span style="font-style:italic;color:#88c0d0;">super</span><span>()</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">__init__</span><span>(</span><span style="color:#81a1c1;">**</span><span>kwargs)
+</span><span>        </span><span style="color:#81a1c1;">self.</span><span style="color:#88c0d0;">__fill_todo_list</span><span>()
+</span><span>
+</span><span>    </span><span style="color:#81a1c1;">def </span><span style="color:#88c0d0;">__fill_todo_list</span><span>(self):
+</span><span>        tasks </span><span style="color:#81a1c1;">= </span><span>[</span><span style="color:#a3be8c;">&quot;Finish this article&quot;</span><span style="color:#eceff4;">,
+</span><span>                    </span><span style="color:#a3be8c;">&quot;Finish the Rust Book&quot;</span><span style="color:#eceff4;">,
+</span><span>                    </span><span style="color:#a3be8c;">&quot;Get a new release of Authenticator&quot;</span><span>]
+</span><span>        </span><span style="color:#81a1c1;">for </span><span>todo_item </span><span style="color:#81a1c1;">in </span><span>tasks:
+</span><span>            todo_label </span><span style="color:#81a1c1;">= </span><span>Gtk</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">Label</span><span>(todo_item)
+</span><span>            todo_label</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">show</span><span>()
+</span><span>            </span><span style="color:#81a1c1;">self.</span><span>todo_list</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">add</span><span>(todo_label)
+</span></code></pre>
+<figure>
+    <img src="&#x2F;posts&#x2F;3-how-to-create-a-gtk-application-using-python-part-1&#x2F;Screenshot-from-2019-05-14-12-30-33.png" >
+    
+    <figcaption>Todo - First screenshot</figcaption>
+    
+</figure>
+<h2 id="conclusion">Conclusion</h2>
+<p>When I started learning GTK a few years ago, you had to deal with installing the required dependencies, learn what' a build system and how to use one (we didn't even have Meson :/). Things got easier for newcomers, as you have seen on this first tutorial you can just start a new project and start hacking. Thank you, Builder, Flatpak, Meson, GTK and the maintainers of python-gobject for implementing GtkTemplate support. In the next tutorial, we will see how to create a widget that represents a task and how to store/read the tasks from a database. Till then here's a list of useful documentation to learn from:</p>
+<ul>
+<li>
+<p>PyGObject API Reference <a href="https://lazka.github.io/pgi-docs/">https://lazka.github.io/pgi-docs/</a></p>
+</li>
+<li>
+<p>The Python GTK+ 3 Tutorial <a href="https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html">https://python-gtk-3-tutorial.readthedocs.io/en/latest/index.html</a></p>
+</li>
+<li>
+<p>Tutorial for beginners (Python) <a href="https://developer.gnome.org/documentation/tutorials/beginners/getting_started.html">https://developer.gnome.org/documentation/tutorials/beginners/getting_started.html</a></p>
+</li>
+<li>
+<p>Flatpak Documentation <a href="http://docs.flatpak.org/en/latest/">http://docs.flatpak.org/en/latest/</a></p>
+</li>
+<li>
+<p>Meson Documentation <a href="https://mesonbuild.com/">https://mesonbuild.com/</a></p>
+</li>
+</ul>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#requirements">Requirements</a>
+                    <ul>
+                        <li>
+                            <a class="toc-h3" href="#install-gnome-builder">Install GNOME Builder</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#getting-started">Getting started</a>
+                    <ul>
+                        <li>
+                            <a class="toc-h3" href="#the-ui-of-the-main-window">The UI of the main window</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#conclusion">Conclusion</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script> 
+<script src="/js/outdate.js"></script> 
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

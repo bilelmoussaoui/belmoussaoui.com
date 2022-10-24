@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>New Website!</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>New Website!</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2020-02-28</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/web"><i class="ri-hashtag ri-sm"></i><span>Web</span></a><a class="tag" href="https://belmoussaoui.com/tags/python"><i class="ri-hashtag ri-sm"></i><span>Python</span></a>
+                </div>
+            </div>    
+
+            
+            
+            <p>I have been thinking of writing a WordPress theme for the blog I had and I noticed that there were too many extensions, too many externally loaded files and trying to fix all of that would have taken me forever. I decided to take that as an opportunity to create something simple and nice with Django &amp; React. </p>
+<h2 id="the-backend">The Backend</h2>
+<p>Built with <a href="https://www.django-rest-framework.org/">Django REST Framework</a> which makes providing a set of API endpoints pretty straightforward. These endpoints are mostly to fetch data from a PostgreSQL database or add/delete entries if a token is provided. The authentication is handled by <a href="https://james1345.github.io/django-rest-knox/">Knox</a> &amp; is used to provide a simple dashboard so I can manage the content I have on my blog.</p>
+<h2 id="the-frontend">The Frontend</h2>
+<p>From configuring Webpack to produce what I want to write CSS, it was the most challenging part of the project. I ended up using <a href="https://bulma.io/">Bulma</a> as a CSS framework which worked out pretty nicely! One thing I wanted to make sure of is to have the smallest bundle possible and avoid loading any external resources. I have replaced the externally loaded Google fonts with the <a href="https://rsms.me/inter/">Inter Typeface</a> family ❤️ and distributed the JS into smaller chunks that are loaded only when used, bundled the few SVG icons I used instead of FontAwesome, removed the unused locales of moments.js and uglified the exported files. </p>
+<p>I will try to write soon about the technical challenges I had to deal with and hopefully, the new blog will help with that!</p>
+<p>Until then, enjoy the new spyware-less blog and stay safe :)</p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#the-backend">The Backend</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#the-frontend">The Frontend</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>   
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

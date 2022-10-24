@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>My Projects</title>
+    <meta name="description" content="My projects page.">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/projects.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header projects" href="/projects"><i class="ri-compasses-2-line ri-2x"></i><span>Projects</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home"><i class="ri-user-6-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+        </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+<main>
+    <div class="proj">
+        <p class="name">App Icon Preview</p>
+        <div class="desc"><p>Tool for designing applications icons</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;flathub.org&#x2F;apps&#x2F;details&#x2F;org.gnome.design.AppIconPreview" target="_blank" rel='noreferrer noopener'>Download</a><a href="https:&#x2F;&#x2F;gitlab.gnome.org&#x2F;World&#x2F;design&#x2F;app-icon-preview" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">ASHPD</p>
+        <div class="desc"><p>A Rust &amp; ZBus wrapper of the XDG portals DBus interfaces</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;flathub.org&#x2F;apps&#x2F;details&#x2F;com.belmoussaoui.ashpd.demo" target="_blank" rel='noreferrer noopener'>Demo</a><a href="https:&#x2F;&#x2F;docs.rs&#x2F;ashpd&#x2F;latest&#x2F;ashpd&#x2F;" target="_blank" rel='noreferrer noopener'>Documentation</a><a href="https:&#x2F;&#x2F;github.com&#x2F;bilelmoussaoui&#x2F;ashpd" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">Authenticator</p>
+        <div class="desc"><p>Generate Two-Factor Codes</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;flathub.org&#x2F;apps&#x2F;details&#x2F;com.belmoussaoui.Authenticator" target="_blank" rel='noreferrer noopener'>Download</a><a href="https:&#x2F;&#x2F;gitlab.gnome.org&#x2F;World&#x2F;Authenticator" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">Contrast</p>
+        <div class="desc"><p>Checks whether the contrast between two colors meet the WCAG requirements</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;flathub.org&#x2F;apps&#x2F;details&#x2F;org.gnome.design.Contrast" target="_blank" rel='noreferrer noopener'>Download</a><a href="https:&#x2F;&#x2F;gitlab.gnome.org&#x2F;World&#x2F;design&#x2F;contrast" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">Decoder</p>
+        <div class="desc"><p>Scan and Generate QR Codes</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;flathub.org&#x2F;apps&#x2F;details&#x2F;com.belmoussaoui.Decoder" target="_blank" rel='noreferrer noopener'>Download</a><a href="https:&#x2F;&#x2F;gitlab.gnome.org&#x2F;World&#x2F;decoder&#x2F;" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">Flatpak VSCode</p>
+        <div class="desc"><p>Flatpak integration in Visual Studio Code for building &amp; running your application</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;marketplace.visualstudio.com&#x2F;items?itemName=bilelmoussaoui.flatpak-vscode" target="_blank" rel='noreferrer noopener'>Download</a><a href="https:&#x2F;&#x2F;github.com&#x2F;bilelmoussaoui&#x2F;flatpak-vscode" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">Flatpak Github Actions</p>
+        <div class="desc"><p>Use Flatpak in your Github CI pipeline</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;github.com&#x2F;flatpak&#x2F;flatpak-github-actions&#x2F;" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">Icon Library</p>
+        <div class="desc"><p>Symbolic Icons for your apps</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;flathub.org&#x2F;apps&#x2F;details&#x2F;org.gnome.design.IconLibrary" target="_blank" rel='noreferrer noopener'>Download</a><a href="https:&#x2F;&#x2F;gitlab.gnome.org&#x2F;World&#x2F;design&#x2F;icon-library&#x2F;" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">Obfuscate</p>
+        <div class="desc"><p>Censor private information</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;flathub.org&#x2F;apps&#x2F;details&#x2F;com.belmoussaoui.Obfuscate" target="_blank" rel='noreferrer noopener'>Download</a><a href="https:&#x2F;&#x2F;gitlab.gnome.org&#x2F;World&#x2F;obfuscate" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div><div class="proj">
+        <p class="name">OO7</p>
+        <div class="desc"><p>James Bond went on a new mission and this time as a Secret Service provider</p>
+</div>
+        <div class="links">
+            <a href="https:&#x2F;&#x2F;docs.rs&#x2F;oo7&#x2F;latest&#x2F;oo7&#x2F;" target="_blank" rel='noreferrer noopener'>Documentation</a><a href="https:&#x2F;&#x2F;github.com&#x2F;bilelmoussaoui&#x2F;oo7" target="_blank" rel='noreferrer noopener'>Source</a>
+        </div>
+    </div>
+</main>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer><script src="/js/dark.js"></script>
+</body>
+
+</html>

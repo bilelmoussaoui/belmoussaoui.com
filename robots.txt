@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://belmoussaoui.com/sitemap.xml

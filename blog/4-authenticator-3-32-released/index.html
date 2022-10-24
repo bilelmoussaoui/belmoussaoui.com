@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Authenticator 3.32 released!</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>Authenticator 3.32 released!</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2019-05-22</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/gnome"><i class="ri-hashtag ri-sm"></i><span>GNOME</span></a><a class="tag" href="https://belmoussaoui.com/tags/python"><i class="ri-hashtag ri-sm"></i><span>Python</span></a>
+                </div>
+            </div>   
+
+            <blockquote id="outdate_warn" class="note hidden" data-days="120"
+                data-text1="Note: This article was last updated " data-text2=" days ago and may be out of date.">
+                <i class="ri-alarm-warning-line ri-lg"></i><span></span>
+            </blockquote>
+            
+            <p>I have been planning to work a bit on <a href="https://flathub.org/apps/details/com.github.bilelmoussaoui.Authenticator">Authenticator</a> and push a new release on Flathub for a while, it took a long time, the latest release was 0.2.5 released the 11 September 2018. I will be following the GNOME release schedule and versioning to make it easier for the users to track the latest release of Authenticator easily, that's why the release number bumped from 0.2.5 to 3.32.</p>
+<h2 id="what-s-authenticator">What's Authenticator?</h2>
+<p>Authenticator is a two-factor authentication application which basically generates a one time usage pin based on a unique token. It's made for GNOME using Python and GTK. The source code is available here <a href="https://gitlab.gnome.org/World/Authenticator">https://gitlab.gnome.org/World/Authenticator</a></p>
+<figure>
+    <img src="&#x2F;posts&#x2F;4-authenticator-3-32-released&#x2F;screenshot3.png" >
+    
+    <figcaption>Authenticator - Main Window</figcaption>
+    
+</figure>
+<h2 id="what-s-new-in-this-release">What's new in this release?</h2>
+<p>I have worked mostly on re-factoring some parts of the code (still some work need to be done), but here's what we get for this new release:</p>
+<ul>
+<li>
+<p>The possibility to lock your application with a password before having access to the accounts, the settings window, backup and restore functionalities</p>
+</li>
+<li>
+<p>GNOME Shell Search Provider: you can now type the account name or the provider of that account on your GNOME Shell Search bar and get the results of what's stored on Authenticator if the authentication with a password is disabled, you can then just click on the account and the PIN is copied to your clipboard</p>
+</li>
+<li>
+<p>We now fetch an icon for each provider you use by downloading the highest resolution favicon we can find on their website, if we can't find one, you can set an image or leave it empty</p>
+</li>
+<li>
+<p>Night Light: we now detect when the night light feature is enabled on your GNOME system and we switch automatically to a dark theme, you can enable that from the settings window</p>
+</li>
+<li>
+<p>The possibility to add an account for a provider (website/application) that's not available on our pre-shipped database</p>
+</li>
+<li>
+<p>A fancy new settings window</p>
+</li>
+<li>
+<p>Keyboard shortcuts</p>
+</li>
+<li>
+<p>A bunch of bug fixes</p>
+</li>
+</ul>
+<p><img src="/posts/4-authenticator-3-32-released/screenshot1.png" alt="Empty Window" /></p>
+<p><img src="/posts/4-authenticator-3-32-released/screenshot2.png" alt="Main Window" /></p>
+<p><img src="/posts/4-authenticator-3-32-released/screenshot3.png" alt="Add an account window" /></p>
+<p><img src="/posts/4-authenticator-3-32-released/screenshot4.png" alt="Preferences" /></p>
+<h2 id="grab-it-now-from-flathub">Grab it now from Flathub</h2>
+<p>You can already download or update the application to the latest release from Flathub. If you are already a user of Authenticator, please back up your data, remove the current version and install the latest one, this is mostly due to the code refactoring I have done to make few things possible, you can restore your data later once the update is installed.</p>
+<p><a href="https://flathub.org/apps/details/com.github.bilelmoussaoui.Authenticator">Download from Flathub</a></p>
+<h3 id="authenticator-beta-and-nightlies">Authenticator Beta and Nightlies</h3>
+<p>Authenticator is also available on Flathub Beta to test the latest changes before they land on the stable release. You can install Authenticator from there using</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">flatpak</span><span> install flathub-beta com.github.bilelmoussaoui.Authenticator
+</span></code></pre>
+<p>We also offer nightlies flatapk's which are built for each commit on our Gitlab repository.</p>
+<h2 id="what-are-the-plans-for-the-next-release">What are the plans for the next release?</h2>
+<p>You can find in our issues tracker the list of features we would like to implement, here's a small list of what you might expect in the next release</p>
+<ul>
+<li>
+<p>Support for Steam Authenticator</p>
+</li>
+<li>
+<p>Support taking a photo of the QRCode</p>
+</li>
+<li>
+<p>Use Flatpak's Screenshot portal instead of GNOME shell's one</p>
+</li>
+</ul>
+<h2 id="how-to-contribute">How to contribute</h2>
+<p>You can help me improve Authenticator by either contributing code, here is a simple <a href="https://gitlab.gnome.org/World/Authenticator/blob/master/CONTRIBUTING.md">contribution guideline</a>. If you're a native English speaker, you can help us improve the wordings we are currently using, or you can help us translate Authenticator to your language <a href="https://l10n.gnome.org/module/authenticator/">here</a>.</p>
+<p>List of useful links:</p>
+<ul>
+<li>Source code: <a href="https://gitlab.gnome.org/World/Authenticator/">https://gitlab.gnome.org/World/Authenticator/</a></li>
+<li>Translate Authenticator: <a href="https://l10n.gnome.org/module/authenticator/">https://l10n.gnome.org/module/authenticator/</a></li>
+<li>Matrix chatroom: <a href="https://riot.im/app/#/room/#authenticator:matrix.org">https://riot.im/app/#/room/#authenticator:matrix.org</a></li>
+</ul>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#what-s-authenticator">What&#x27;s Authenticator?</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#what-s-new-in-this-release">What&#x27;s new in this release?</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#grab-it-now-from-flathub">Grab it now from Flathub</a>
+                    <ul>
+                        <li>
+                            <a class="toc-h3" href="#authenticator-beta-and-nightlies">Authenticator Beta and Nightlies</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#what-are-the-plans-for-the-next-release">What are the plans for the next release?</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#how-to-contribute">How to contribute</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script> 
+<script src="/js/outdate.js"></script> 
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

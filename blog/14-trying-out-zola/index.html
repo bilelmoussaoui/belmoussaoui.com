@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Trying out Zola</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>Trying out Zola</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2022-10-10</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/web"><i class="ri-hashtag ri-sm"></i><span>Web</span></a><a class="tag" href="https://belmoussaoui.com/tags/rust"><i class="ri-hashtag ri-sm"></i><span>Rust</span></a>
+                </div>
+            </div>    
+
+            
+            
+            <p>For nearly two years I have been inactive on my blog despite spending time making a <em>fancy</em> website, but  I can no longer afford the extra code to maintain and infrastructure work to keep it running. So I decided to move the posts I had on the old website to a statically generated one while waiting for the CI to pass during the <a href="https://wiki.gnome.org/Hackfests/Rust2022">gtk-rs hackfest</a>.</p>
+<p>One of the annoyances I had with static websites generators is that they were too slow. Add to that <a href="https://jekyllrb.com/">Jekyll</a> is written in Ruby and it was too difficult to get any <code>rubygem</code> installed on my machine.</p>
+<h2 id="enters-zola">Enters Zola</h2>
+<p>Per the project description, <a href="https://www.getzola.org/">Zola</a> is a &quot;A fast static site generator in a single binary with everything built-in&quot;.</p>
+<h3 id="installation">Installation</h3>
+<p>The installation process is pretty easy using <code>cargo</code> </p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">cargo</span><span> install zola
+</span></code></pre>
+<p>You could also use the pre-built binaries if you want to avoid waiting a bit of time for everything to compile locally, see <a href="https://www.getzola.org/documentation/getting-started/installation/">https://www.getzola.org/documentation/getting-started/installation/</a>.</p>
+<p>Once Zola is installed, you can initialize a new project:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">zola</span><span> init my-new-blog
+</span></code></pre>
+<p>To run the web server and test your changes:</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">zola</span><span> serve
+</span></code></pre>
+<p>Then you either have the choice to write your template/theme based on your needs or if you want something that just works like me, you will probably be served by <a href="https://www.getzola.org/themes/">https://www.getzola.org/themes/</a>.</p>
+<h3 id="writing-process">Writing process</h3>
+<p>That would depend on the theme you ended up picking, in the case of <a href="https://github.com/isunjn/serene">Serene</a>, all I had to do is create a <code>blog</code> directory inside <code>content</code> and add a <code>markdown</code> file for each post.</p>
+<p>A very helpful feature I noticed while porting my articles to <code>markdown</code>, that validates all the links on your posts is</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">zola</span><span> check
+</span></code></pre>
+<h3 id="publishing">Publishing</h3>
+<p>The simplest way of publishing a static website nowadays is to use something like Github/Gitlab Pages. The documentation got you covered as they include the <code>yaml</code> receipe for the popular services out there <a href="https://www.getzola.org/documentation/deployment/overview/">https://www.getzola.org/documentation/deployment/overview/</a>.</p>
+<p>Although, when using the Github receipe, it seems there is an error in the documentation and you will have to do the following change for it to work</p>
+<pre data-lang="diff" style="background-color:#2e3440;color:#d8dee9;" class="language-diff "><code class="language-diff" data-lang="diff"><span style="color:#bf616a;">-           TOKEN: ${{ secrets.GITHUB_TOKEN }}
+</span><span style="color:#a3be8c;">+           TOKEN: $GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}
+</span></code></pre>
+<h2 id="conclusion">Conclusion</h2>
+<p>As you might have noticed, I managed to migrate all the content I had on the old website a few hours after installing Zola for the first time. The whole process is pretty smooth if you are familiar with static website generators.</p>
+<p>If you are looking for a Jekyll/Hugo replacement, I highly recommend you to give Zola a try.</p>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#enters-zola">Enters Zola</a>
+                    <ul>
+                        <li>
+                            <a class="toc-h3" href="#installation">Installation</a>
+                        </li>
+                        <li>
+                            <a class="toc-h3" href="#writing-process">Writing process</a>
+                        </li>
+                        <li>
+                            <a class="toc-h3" href="#publishing">Publishing</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#conclusion">Conclusion</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>   
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

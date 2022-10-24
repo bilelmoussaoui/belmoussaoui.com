@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>Store and display GeoJSON data using Flask, MongoDB &amp; Leaflet</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/post.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            <button id="toc-toggle" aria-label="table of content"><i class="ri-menu-2-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<div class="wrap">
+    <div class="blank"></div>
+    <main>
+        <div id="top"></div>
+        <article>
+            <h1>Store and display GeoJSON data using Flask, MongoDB &amp; Leaflet</h1>
+            <div id="post-info">
+                <div class="date">
+                    <span id="publish">2019-06-28</span>
+                    </div>
+                <div class="tags">
+                    <a class="tag" href="https://belmoussaoui.com/tags/web"><i class="ri-hashtag ri-sm"></i><span>Web</span></a><a class="tag" href="https://belmoussaoui.com/tags/python"><i class="ri-hashtag ri-sm"></i><span>Python</span></a>
+                </div>
+            </div>    
+
+            
+            
+            <p><a href="http://flask.pocoo.org/">Flask</a> is a lightweight <strong>Python</strong> framework (that can somehow be compared to <strong>Slim framework</strong> for <strong>PHP</strong>). Additional functionalities can be added by installing Flask extensions. <strong>GeoJSON</strong> is a format that allows us to encode geolocation data as <strong>JSON</strong>. You can read more about the specifications <a href="https://geojson.org/">here</a> and play with it a bit on this very well made website.</p>
+<p>The usage of <strong>MongoDB</strong> is not arbitrary here, as it allows us to store geolocation data easily. You might need to install it on your system before following this article.</p>
+<p>Let's set up a new virtual environment using <strong>virtualenv</strong></p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">virtualenv</span><span> flask-mongodb
+</span><span style="color:#88c0d0;">source</span><span> ./flask-mongodb/bin/activate
+</span></code></pre>
+<p>We can now install the required packages</p>
+<pre data-lang="bash" style="background-color:#2e3440;color:#d8dee9;" class="language-bash "><code class="language-bash" data-lang="bash"><span style="color:#88c0d0;">pip3</span><span> install flask
+</span><span style="color:#88c0d0;">pip3</span><span> install pymongo
+</span></code></pre>
+<h2 id="our-first-website-using-flask">Our first website using Flask</h2>
+<p>Building a plain simple website using Flask is pretty straight forward as we don't have to spend hours configuring stuff that we might never use.</p>
+<pre data-lang="python" style="background-color:#2e3440;color:#d8dee9;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#81a1c1;">from </span><span>flask </span><span style="color:#81a1c1;">import </span><span>Flask
+</span><span>app </span><span style="color:#81a1c1;">= </span><span style="color:#88c0d0;">Flask</span><span>(__name__)
+</span><span>
+</span><span style="color:#d08770;">@</span><span>app</span><span style="color:#81a1c1;">.</span><span>route(</span><span style="color:#a3be8c;">&#39;/&#39;</span><span>)
+</span><span style="color:#81a1c1;">def </span><span style="color:#88c0d0;">main</span><span>():
+</span><span>    </span><span style="color:#81a1c1;">return </span><span style="color:#a3be8c;">&#39;Hello world!&#39;
+</span><span>
+</span><span>app</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">run</span><span>()
+</span></code></pre>
+<p>Let's run our <strong>WSGI</strong> application using python3 main.py and head to https://127.0.0.1:5000/ to see our beautiful website.</p>
+<p>Flask uses <strong>Jinja2</strong> as a templates engine, it allow us to render HTML templates. It uses the templates directory by default, so let's create that and add a simple HTML file.</p>
+<pre data-lang="html" style="background-color:#2e3440;color:#d8dee9;" class="language-html "><code class="language-html" data-lang="html"><span style="color:#81a1c1;">&lt;!</span><span style="color:#eceff4;">DOCTYPE </span><span style="color:#81a1c1;">html&gt;
+</span><span style="color:#81a1c1;">&lt;head&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;title&gt;</span><span style="color:#eceff4;">GeoJSON + Flask + MongoDB</span><span style="color:#81a1c1;">&lt;/title&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;meta </span><span style="color:#8fbcbb;">charset</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;utf-8&quot;</span><span style="color:#81a1c1;">&gt;
+</span><span style="color:#81a1c1;">&lt;/head&gt;
+</span><span style="color:#81a1c1;">&lt;body&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;h1&gt;
+</span><span style="color:#eceff4;">        Let&#39;s display some nice maps here!
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;/h1&gt;
+</span><span style="color:#81a1c1;">&lt;/body&gt;
+</span><span style="color:#81a1c1;">&lt;/html&gt;
+</span></code></pre>
+<p>We can use the render_template function to render an HTML file which will render (pretty obvious from the function name) and create a response from that HTML content.</p>
+<pre data-lang="python" style="background-color:#2e3440;color:#d8dee9;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#81a1c1;">from </span><span>flask </span><span style="color:#81a1c1;">import </span><span>Flask</span><span style="color:#eceff4;">, </span><span>render_template
+</span><span>app </span><span style="color:#81a1c1;">= </span><span style="color:#88c0d0;">Flask</span><span>(__name__)
+</span><span>
+</span><span style="color:#d08770;">@</span><span>app</span><span style="color:#81a1c1;">.</span><span>route(</span><span style="color:#a3be8c;">&#39;/&#39;</span><span>)
+</span><span style="color:#81a1c1;">def </span><span style="color:#88c0d0;">main</span><span>():
+</span><span>    </span><span style="color:#81a1c1;">return </span><span style="color:#88c0d0;">render_template</span><span>(</span><span style="color:#a3be8c;">&#39;main.html&#39;</span><span>)
+</span><span>
+</span><span>app</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">run</span><span>()
+</span></code></pre>
+<h2 id="pymongo-the-mongodb-python-api">Pymongo, the MongoDB Python API</h2>
+<p><strong>Pymongo</strong> is the Python implementation of the MongoDB API, that can allow us to communicate with mongodb using Python. The mongdb daemon must be running during that process. If it's your first time with your pymongo, have a look at the <a href="https://pymongo.readthedocs.io/en/stable/tutorial.html">official documentation</a>.</p>
+<p>Connecting to a MongoDB database is done by accessing the database name attribute from the client object.</p>
+<pre data-lang="python" style="background-color:#2e3440;color:#d8dee9;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#81a1c1;">from </span><span>pymongo </span><span style="color:#81a1c1;">import </span><span>MongoClient
+</span><span>
+</span><span>client </span><span style="color:#81a1c1;">= </span><span style="color:#88c0d0;">MongoClient</span><span>()
+</span><span>db </span><span style="color:#81a1c1;">= </span><span>client</span><span style="color:#81a1c1;">.</span><span>geojson_flask
+</span></code></pre>
+<p>Let's add some geospatial data that we can display later.</p>
+<pre data-lang="python" style="background-color:#2e3440;color:#d8dee9;" class="language-python "><code class="language-python" data-lang="python"><span>addresses </span><span style="color:#81a1c1;">= </span><span>db</span><span style="color:#81a1c1;">.</span><span>addresses_collection
+</span><span>addresses</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">insert_one</span><span>({
+</span><span>    </span><span style="color:#a3be8c;">&#39;type&#39;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&#39;Point&#39;</span><span style="color:#eceff4;">,
+</span><span>    </span><span style="color:#a3be8c;">&#39;coordinates&#39;</span><span style="color:#eceff4;">: </span><span>[</span><span style="color:#b48ead;">41</span><span style="color:#eceff4;">.</span><span style="color:#b48ead;">39826</span><span style="color:#eceff4;">, </span><span style="color:#b48ead;">17</span><span style="color:#eceff4;">.</span><span style="color:#b48ead;">13559</span><span>]
+</span><span>})
+</span></code></pre>
+<p>GeoJSON supports multiple objects types like Point, LineString, Polygon... You can find the list of those and how to store them on a MongoDB collection <a href="https://docs.mongodb.com/manual/reference/geojson/">here</a> or by reading the GeoJSON <a href="https://tools.ietf.org/html/rfc7946">specs</a>.</p>
+<p>Now that we have some data stored on our collection, we need to provide a simple API to fetch that data so we can display it later on our HTML page, we will see the reason later. Our API endpoint should return a JSON object with all the points coordinates we have stored in our collection.</p>
+<pre data-lang="python" style="background-color:#2e3440;color:#d8dee9;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#81a1c1;">from </span><span>flask </span><span style="color:#81a1c1;">import </span><span>jsonify
+</span><span style="color:#d08770;">@</span><span>app</span><span style="color:#81a1c1;">.</span><span>route(</span><span style="color:#a3be8c;">&#39;/points&#39;</span><span style="color:#eceff4;">, </span><span>methods</span><span style="color:#81a1c1;">=</span><span>[</span><span style="color:#a3be8c;">&#39;GET&#39;</span><span>])
+</span><span style="color:#81a1c1;">def </span><span style="color:#88c0d0;">get_all_points</span><span>():
+</span><span>    points </span><span style="color:#81a1c1;">= </span><span>[]
+</span><span>    </span><span style="color:#81a1c1;">for </span><span>address </span><span style="color:#81a1c1;">in </span><span>addresses</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">find</span><span>({</span><span style="color:#a3be8c;">&#39;type&#39;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&#39;Point&#39;</span><span>}):
+</span><span>        points</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">append</span><span>({
+</span><span>            </span><span style="color:#a3be8c;">&quot;type&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;Feature&quot;</span><span style="color:#eceff4;">,
+</span><span>            </span><span style="color:#a3be8c;">&quot;geometry&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>                </span><span style="color:#a3be8c;">&quot;type&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;Point&quot;</span><span style="color:#eceff4;">,
+</span><span>                </span><span style="color:#a3be8c;">&quot;coordinates&quot;</span><span style="color:#eceff4;">: </span><span>address[</span><span style="color:#a3be8c;">&#39;coordinates&#39;</span><span>]
+</span><span>            }
+</span><span>        })
+</span><span>    </span><span style="color:#81a1c1;">return </span><span style="color:#88c0d0;">jsonify</span><span>(points)
+</span></code></pre>
+<p>Flask provides a jsonify method which converts our dict object to a JSON object and adds the correct content-type header.</p>
+<h2 id="displaying-the-data-with-openstreetmap-leaflet">Displaying the data with OpenStreetMap &amp; Leaflet</h2>
+<p>In order to display our map, we will be using <a href="https://leafletjs.com/">Leaflet</a>, which is a JS library that allows us to interact with maps easily. We won't be using any JS build system here, if you are using VueJS in your project, you can use Vue2Leaflet.</p>
+<p>Let's add the JS &amp; CSS files to our HTML file</p>
+<pre data-lang="html" style="background-color:#2e3440;color:#d8dee9;" class="language-html "><code class="language-html" data-lang="html"><span style="color:#81a1c1;">&lt;link </span><span style="color:#8fbcbb;">rel</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;stylesheet&quot; </span><span style="color:#8fbcbb;">href</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;https://unpkg.com/leaflet@1.5.1/dist/leaflet.css&quot; </span><span style="color:#81a1c1;">/&gt;
+</span><span style="color:#81a1c1;">&lt;script </span><span style="color:#8fbcbb;">src</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;https://unpkg.com/leaflet@1.5.1/dist/leaflet.js&quot;</span><span style="color:#81a1c1;">&gt;&lt;/script&gt;
+</span></code></pre>
+<p>We can now create a new map using Leaflet and pass the center position and the zoom level.</p>
+<pre data-lang="html" style="background-color:#2e3440;color:#d8dee9;" class="language-html "><code class="language-html" data-lang="html"><span style="color:#81a1c1;">&lt;div </span><span style="color:#8fbcbb;">id</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;map&quot; </span><span style="color:#8fbcbb;">style</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;</span><span>height</span><span style="color:#eceff4;">: </span><span style="color:#b48ead;">80</span><span style="color:#81a1c1;">vh</span><span style="color:#eceff4;">;</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">&gt;&lt;/div&gt;
+</span><span style="color:#eceff4;">
+</span><span style="color:#81a1c1;">&lt;script&gt;
+</span><span style="color:#81a1c1;">let </span><span>map </span><span style="color:#81a1c1;">= </span><span style="color:#8fbcbb;">L</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">map</span><span style="color:#eceff4;">(</span><span style="color:#a3be8c;">&#39;map&#39;</span><span style="color:#eceff4;">)</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">setView</span><span style="color:#eceff4;">([</span><span style="color:#b48ead;">51</span><span style="color:#eceff4;">.</span><span style="color:#b48ead;">505</span><span style="color:#eceff4;">, </span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">0</span><span style="color:#eceff4;">.</span><span style="color:#b48ead;">09</span><span style="color:#eceff4;">], </span><span style="color:#b48ead;">13</span><span style="color:#eceff4;">)   
+</span><span style="color:#81a1c1;">&lt;/script&gt;
+</span></code></pre>
+<p>If you want to center the map on the user's current location, you can use this, which will ask the user to allow your website to access their current geolocation and update the center to that position.</p>
+<pre data-lang="javascript" style="background-color:#2e3440;color:#d8dee9;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span style="color:#81a1c1;">var </span><span>map </span><span style="color:#81a1c1;">= L.</span><span style="color:#88c0d0;">map</span><span>(</span><span style="color:#a3be8c;">&#39;map&#39;</span><span>)</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">setView</span><span>([</span><span style="color:#b48ead;">51.505</span><span style="color:#eceff4;">, </span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">0.09</span><span>]</span><span style="color:#eceff4;">, </span><span style="color:#b48ead;">13</span><span>)
+</span><span style="color:#81a1c1;">if </span><span>(navigator</span><span style="color:#81a1c1;">.</span><span>geolocation) {
+</span><span>	navigator</span><span style="color:#81a1c1;">.</span><span>geolocation</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">getCurrentPosition</span><span>((position) </span><span style="color:#81a1c1;">=&gt; </span><span>{
+</span><span>		map</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">panTo</span><span>(</span><span style="color:#81a1c1;">L.</span><span style="color:#88c0d0;">latLng</span><span>(position</span><span style="color:#81a1c1;">.</span><span>coords</span><span style="color:#81a1c1;">.</span><span>latitude</span><span style="color:#eceff4;">, </span><span>position</span><span style="color:#81a1c1;">.</span><span>coords</span><span style="color:#81a1c1;">.</span><span>longitude))
+</span><span>	})
+</span><span>}
+</span></code></pre>
+<p>If we run the current code, nothing will be displayed on our map as we need to specify a tile provider first. We will be using Open Street Map</p>
+<pre data-lang="javascript" style="background-color:#2e3440;color:#d8dee9;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span style="color:#81a1c1;">L.</span><span style="color:#88c0d0;">tileLayer</span><span>(</span><span style="color:#a3be8c;">&#39;http://{s}.tile.osm.org/{z}/{x}/{y}.png&#39;</span><span style="color:#eceff4;">, </span><span>{ attribution</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&#39;OSM&#39; </span><span>})</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">addTo</span><span>(map)
+</span></code></pre>
+<p><img src="/posts/4-display-geojson-data-using-flask-and-mongodb/Screenshot-from-2019-06-28-22-17-19.png" alt="Rendered maps using leaflet" /></p>
+<p>Yay, our map is finally showing up! Let's fetch the data from that simple API endpoint we have made before and add those to our Leaflet map.</p>
+<p>Let’s fetch the data from that simple API endpoint we have made before and add those to our Leaflet map. We can use a simple XMLHTTPRequest, but I prefer using axios, which is a simple HTTP client.</p>
+<pre data-lang="html" style="background-color:#2e3440;color:#d8dee9;" class="language-html "><code class="language-html" data-lang="html"><span style="color:#81a1c1;">&lt;script </span><span style="color:#8fbcbb;">src</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;https://unpkg.com/axios/dist/axios.min.js&quot;</span><span style="color:#81a1c1;">&gt;&lt;/script&gt;
+</span></code></pre>
+<p>We can fetch the data from our API endpoint using axios.get</p>
+<pre data-lang="javascript" style="background-color:#2e3440;color:#d8dee9;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span>axios</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">get</span><span>(</span><span style="color:#a3be8c;">&#39;http://127.0.0.1:5000/points&#39;</span><span>)
+</span><span>    </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">then</span><span>(response </span><span style="color:#81a1c1;">=&gt; </span><span>{
+</span><span>        </span><span style="color:#8fbcbb;">console</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">log</span><span>(response</span><span style="color:#81a1c1;">.</span><span>data)
+</span><span>    })
+</span></code></pre>
+<p>Leaflet supports creating a GeoJSON layer and display it on the map</p>
+<pre data-lang="javascript" style="background-color:#2e3440;color:#d8dee9;" class="language-javascript "><code class="language-javascript" data-lang="javascript"><span style="color:#81a1c1;">L.</span><span style="color:#88c0d0;">geoJSON</span><span>(response</span><span style="color:#81a1c1;">.</span><span>data</span><span style="color:#eceff4;">, </span><span>{})</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">addTo</span><span>(map)
+</span></code></pre>
+<p>As you can see, the advantages of using Leaflet to display the data we have stored on our MongoDB pretty easy, as we won't need to change much in our code in the future if we want to display in kind of GeoJSON features.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>I wrote this article after doing some research on how to handle geospatial data and how can I display them pretty easily on a project I'm working on. You should by now have an idea of how to</p>
+<ul>
+<li>
+<p>Get started with simple Flask web pages</p>
+</li>
+<li>
+<p>GeoJSON, what's and how to store the data in a proper database like MongoDB</p>
+</li>
+<li>
+<p>How to fetch and display the data using axios and Leaflet.</p>
+</li>
+</ul>
+<p>You can find the final code here with a few tweaks to allow showing whatever type of GeoJSON features.</p>
+<pre data-lang="python" style="background-color:#2e3440;color:#d8dee9;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#81a1c1;">from </span><span>flask </span><span style="color:#81a1c1;">import </span><span>Flask</span><span style="color:#eceff4;">, </span><span>render_template</span><span style="color:#eceff4;">, </span><span>jsonify
+</span><span>
+</span><span>app </span><span style="color:#81a1c1;">= </span><span style="color:#88c0d0;">Flask</span><span>(__name__)
+</span><span style="color:#81a1c1;">from </span><span>pymongo </span><span style="color:#81a1c1;">import </span><span>MongoClient
+</span><span>
+</span><span>client </span><span style="color:#81a1c1;">= </span><span style="color:#88c0d0;">MongoClient</span><span>()
+</span><span>db </span><span style="color:#81a1c1;">= </span><span>client</span><span style="color:#81a1c1;">.</span><span>geojson_flask
+</span><span>geodata_collection </span><span style="color:#81a1c1;">= </span><span>db</span><span style="color:#81a1c1;">.</span><span>geodata
+</span><span>
+</span><span style="color:#d08770;">@</span><span>app</span><span style="color:#81a1c1;">.</span><span>route(</span><span style="color:#a3be8c;">&#39;/geojson-features&#39;</span><span style="color:#eceff4;">, </span><span>methods</span><span style="color:#81a1c1;">=</span><span>[</span><span style="color:#a3be8c;">&#39;GET&#39;</span><span>])
+</span><span style="color:#81a1c1;">def </span><span style="color:#88c0d0;">get_all_points</span><span>():
+</span><span>    features </span><span style="color:#81a1c1;">= </span><span>[]
+</span><span>    </span><span style="color:#81a1c1;">for </span><span>geo_feature </span><span style="color:#81a1c1;">in </span><span>geodata_collection</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">find</span><span>({}):
+</span><span>        features</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">append</span><span>({
+</span><span>            </span><span style="color:#a3be8c;">&quot;type&quot;</span><span style="color:#eceff4;">: </span><span style="color:#a3be8c;">&quot;Feature&quot;</span><span style="color:#eceff4;">,
+</span><span>            </span><span style="color:#a3be8c;">&quot;geometry&quot;</span><span style="color:#eceff4;">: </span><span>{
+</span><span>                </span><span style="color:#a3be8c;">&quot;type&quot;</span><span style="color:#eceff4;">: </span><span>geo_feature[</span><span style="color:#a3be8c;">&#39;geometry&#39;</span><span>][</span><span style="color:#a3be8c;">&#39;type&#39;</span><span>]</span><span style="color:#eceff4;">,
+</span><span>                </span><span style="color:#a3be8c;">&quot;coordinates&quot;</span><span style="color:#eceff4;">: </span><span>geo_feature[</span><span style="color:#a3be8c;">&#39;geometry&#39;</span><span>][</span><span style="color:#a3be8c;">&#39;coordinates&#39;</span><span>]
+</span><span>            }
+</span><span>        })
+</span><span>    </span><span style="color:#81a1c1;">return </span><span style="color:#88c0d0;">jsonify</span><span>(features)
+</span><span>
+</span><span style="color:#d08770;">@</span><span>app</span><span style="color:#81a1c1;">.</span><span>route(</span><span style="color:#a3be8c;">&#39;/&#39;</span><span>)
+</span><span style="color:#81a1c1;">def </span><span style="color:#88c0d0;">main</span><span>():
+</span><span>    </span><span style="color:#81a1c1;">return </span><span style="color:#88c0d0;">render_template</span><span>(</span><span style="color:#a3be8c;">&#39;main.html&#39;</span><span>)
+</span><span>
+</span><span>app</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">run</span><span>()
+</span></code></pre>
+<pre data-lang="html" style="background-color:#2e3440;color:#d8dee9;" class="language-html "><code class="language-html" data-lang="html"><span style="color:#81a1c1;">&lt;!</span><span style="color:#eceff4;">DOCTYPE </span><span style="color:#81a1c1;">html&gt;
+</span><span style="color:#eceff4;">
+</span><span style="color:#81a1c1;">&lt;head&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;title&gt;</span><span style="color:#eceff4;">GeoJSON + Flask + MongoDB</span><span style="color:#81a1c1;">&lt;/title&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;meta </span><span style="color:#8fbcbb;">charset</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;utf-8&quot;</span><span style="color:#81a1c1;">&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;link </span><span style="color:#8fbcbb;">rel</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;stylesheet&quot; </span><span style="color:#8fbcbb;">href</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;https://unpkg.com/leaflet@1.5.1/dist/leaflet.css&quot; </span><span style="color:#81a1c1;">/&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;script </span><span style="color:#8fbcbb;">src</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;https://unpkg.com/leaflet@1.5.1/dist/leaflet.js&quot;</span><span style="color:#81a1c1;">&gt;&lt;/script&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;script </span><span style="color:#8fbcbb;">src</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;https://unpkg.com/axios/dist/axios.min.js&quot;</span><span style="color:#81a1c1;">&gt;&lt;/script&gt;
+</span><span style="color:#81a1c1;">&lt;/head&gt;
+</span><span style="color:#eceff4;">
+</span><span style="color:#81a1c1;">&lt;body&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;h1&gt;
+</span><span style="color:#eceff4;">        Let&#39;s display some nice maps here!
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;/h1&gt;
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;div </span><span style="color:#8fbcbb;">id</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;map&quot; </span><span style="color:#8fbcbb;">style</span><span style="color:#eceff4;">=</span><span style="color:#a3be8c;">&quot;</span><span>height</span><span style="color:#eceff4;">: </span><span style="color:#b48ead;">80</span><span style="color:#81a1c1;">vh</span><span style="color:#eceff4;">;</span><span style="color:#a3be8c;">&quot;</span><span style="color:#81a1c1;">&gt;&lt;/div&gt;
+</span><span style="color:#eceff4;">
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;script&gt;
+</span><span style="color:#eceff4;">
+</span><span style="color:#eceff4;">        </span><span style="color:#81a1c1;">var </span><span>map </span><span style="color:#81a1c1;">= </span><span style="color:#8fbcbb;">L</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">map</span><span style="color:#eceff4;">(</span><span style="color:#a3be8c;">&#39;map&#39;</span><span style="color:#eceff4;">)</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">setView</span><span style="color:#eceff4;">([</span><span style="color:#b48ead;">51</span><span style="color:#eceff4;">.</span><span style="color:#b48ead;">505</span><span style="color:#eceff4;">, </span><span style="color:#81a1c1;">-</span><span style="color:#b48ead;">0</span><span style="color:#eceff4;">.</span><span style="color:#b48ead;">09</span><span style="color:#eceff4;">], </span><span style="color:#b48ead;">13</span><span style="color:#eceff4;">)
+</span><span style="color:#eceff4;">        </span><span style="color:#81a1c1;">if </span><span style="color:#eceff4;">(</span><span style="color:#8fbcbb;">navigator</span><span style="color:#81a1c1;">.</span><span style="color:#eceff4;">geolocation) {
+</span><span style="color:#eceff4;">            </span><span style="color:#8fbcbb;">navigator</span><span style="color:#81a1c1;">.</span><span style="color:#eceff4;">geolocation</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">getCurrentPosition</span><span style="color:#eceff4;">((</span><span>position</span><span style="color:#eceff4;">) </span><span style="color:#81a1c1;">=&gt; </span><span style="color:#eceff4;">{
+</span><span style="color:#eceff4;">                </span><span>map</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">panTo</span><span style="color:#eceff4;">(</span><span style="color:#8fbcbb;">L</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">latLng</span><span style="color:#eceff4;">(</span><span>position</span><span style="color:#81a1c1;">.</span><span style="color:#eceff4;">coords</span><span style="color:#81a1c1;">.</span><span style="color:#eceff4;">latitude, </span><span>position</span><span style="color:#81a1c1;">.</span><span style="color:#eceff4;">coords</span><span style="color:#81a1c1;">.</span><span style="color:#eceff4;">longitude))
+</span><span style="color:#eceff4;">            })
+</span><span style="color:#eceff4;">        }
+</span><span style="color:#eceff4;">        </span><span style="color:#8fbcbb;">L</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">tileLayer</span><span style="color:#eceff4;">(</span><span style="color:#a3be8c;">&#39;http://{s}.tile.osm.org/{z}/{x}/{y}.png&#39;</span><span style="color:#eceff4;">, {
+</span><span style="color:#eceff4;">            attribution: </span><span style="color:#a3be8c;">&#39;Open street map&#39;
+</span><span style="color:#eceff4;">        })</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">addTo</span><span style="color:#eceff4;">(</span><span>map</span><span style="color:#eceff4;">)
+</span><span style="color:#eceff4;">
+</span><span style="color:#eceff4;">        </span><span>axios</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">get</span><span style="color:#eceff4;">(</span><span style="color:#a3be8c;">&#39;http://127.0.0.1:5000/geojson-features&#39;</span><span style="color:#eceff4;">)
+</span><span style="color:#eceff4;">            </span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">then</span><span style="color:#eceff4;">(</span><span>response </span><span style="color:#81a1c1;">=&gt; </span><span style="color:#eceff4;">{
+</span><span style="color:#eceff4;">                </span><span style="color:#8fbcbb;">console</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">log</span><span style="color:#eceff4;">(</span><span>response</span><span style="color:#81a1c1;">.</span><span style="color:#eceff4;">data)
+</span><span style="color:#eceff4;">                </span><span style="color:#8fbcbb;">L</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">geoJSON</span><span style="color:#eceff4;">(</span><span>response</span><span style="color:#81a1c1;">.</span><span style="color:#eceff4;">data, {})</span><span style="color:#81a1c1;">.</span><span style="color:#88c0d0;">addTo</span><span style="color:#eceff4;">(</span><span>map</span><span style="color:#eceff4;">);
+</span><span style="color:#eceff4;">
+</span><span style="color:#eceff4;">            })
+</span><span style="color:#eceff4;">    </span><span style="color:#81a1c1;">&lt;/script&gt;
+</span><span style="color:#eceff4;">
+</span><span style="color:#81a1c1;">&lt;/body&gt;
+</span><span style="color:#81a1c1;">&lt;/html&gt;
+</span></code></pre>
+
+            <blockquote id="cc_license" class="note">
+                <i class="ri-creative-commons-line ri-lg"></i>
+                <div class="content"><p>This work is licensed under <a href="http://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>.</p>
+</div>
+            </blockquote>
+        </article>
+    </main>
+    <aside  class="blur" > 
+        <nav>
+            <ul>
+                <li>
+                    <a class="toc-h2" href="#our-first-website-using-flask">Our first website using Flask</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#pymongo-the-mongodb-python-api">Pymongo, the MongoDB Python API</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#displaying-the-data-with-openstreetmap-leaflet">Displaying the data with OpenStreetMap &amp; Leaflet</a>
+                </li>
+                <li>
+                    <a class="toc-h2" href="#conclusion">Conclusion</a>
+                </li>
+            </ul>
+        </nav>
+        <a id="back-to-top" aria-label="back to top" href="#top"><i class="ri-arrow-up-s-line ri-2x"></i></a>
+    </aside>
+</div>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>   
+<script src="/js/toc.js"></script>
+<script src="/js/progress.js"></script>
+<script src="/js/lightense.min.js"></script>
+<script src="/js/img.js"></script>
+</body>
+
+</html>

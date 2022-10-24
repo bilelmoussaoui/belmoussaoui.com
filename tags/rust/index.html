@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <title>My Blog</title>
+    <meta name="description" content="">
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&family=Jost&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/var.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/header.css" />
+<link rel="stylesheet" href="/css/footer.css" />
+<link rel="stylesheet" href="/css/tags_single.css" />
+    
+    
+    
+</head>
+
+<body>
+    <script>if(localStorage.getItem('theme')=='dark'){document.body.classList.add('dark-mode');}</script>
+    
+<header  class="blur" >
+    <div class="top">
+        <a class="header blog" href="/blog"><i class="ri-quill-pen-line ri-2x"></i><span>Blog</span></a>
+        <a class="back" href="/"><i class="ri-arrow-left-s-line ri-1x"></i><span>Home</span></a>
+        <div class="icon">
+            <a id="go-home" href="/" aria-label="home" ><i class="ri-user-6-line ri-xl"></i></a>
+            <a href="/blog/atom.xml" aria-label="rss feed" ><i class="ri-rss-line ri-xl"></i></a>
+            <button id="color-toggle" aria-label="dark light mode switch"><i class="ri-moon-line ri-xl"></i></button>
+            </div>
+    </div>
+    <div id="progress-bar"></div>
+</header>
+
+<main>
+    <div class="title">
+        <i class="ri-hashtag"></i>
+        <span>Rust</span>
+        <a href="https://belmoussaoui.com/tags">All Tags</a>
+    </div>
+    <div class="post-list">
+        <a class="post" href="https:&#x2F;&#x2F;belmoussaoui.com&#x2F;blog&#x2F;15-making-rust-attractive-for-writing-gtk-applications&#x2F;">
+            <span>Making Rust attractive for writing GTK applications</span>
+            <span class="date">2022-10-23</span>
+        </a><a class="post" href="https:&#x2F;&#x2F;belmoussaoui.com&#x2F;blog&#x2F;14-trying-out-zola&#x2F;">
+            <span>Trying out Zola</span>
+            <span class="date">2022-10-10</span>
+        </a><a class="post" href="https:&#x2F;&#x2F;belmoussaoui.com&#x2F;blog&#x2F;12-oxidizing-portals&#x2F;">
+            <span>Oxidizing portals with zbus</span>
+            <span class="date">2020-09-13</span>
+        </a><a class="post" href="https:&#x2F;&#x2F;belmoussaoui.com&#x2F;blog&#x2F;11-libhandy-rs-0-6-0&#x2F;">
+            <span>libhandy-rs v0.6.0 is out!</span>
+            <span class="date">2020-07-09</span>
+        </a><a class="post" href="https:&#x2F;&#x2F;belmoussaoui.com&#x2F;blog&#x2F;8-how-to-flatpak-a-rust-application&#x2F;">
+            <span>How to Flatpak a Rust application</span>
+            <span class="date">2020-02-08</span>
+        </a><a class="post" href="https:&#x2F;&#x2F;belmoussaoui.com&#x2F;blog&#x2F;7-first-release-read-it-later&#x2F;">
+            <span>Read It Later, yet an other GTK &amp; Rust application</span>
+            <span class="date">2020-02-04</span>
+        </a>
+    </div>
+</main>
+<footer>
+    <div class="copyright">
+        Copyright © 2021 Bilal Elmoussaoui. All rights reserved.
+    </div>
+    <div class="credits">
+        <span>Powered by <a href="https://www.getzola.org/" target="_blank" rel='noreferrer noopener'>Zola</a> and <a href="https://github.com/isunjn/serene" target="_blank" rel='noreferrer noopener'>Serene</a></span>
+    </div>
+</footer>
+<script src="/js/dark.js"></script>
+</body>
+
+</html>
