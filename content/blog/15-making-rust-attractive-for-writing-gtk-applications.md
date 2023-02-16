@@ -134,7 +134,7 @@ mod imp {
     impl ObjectImpl for SimpleWidget {
         fn dispose(&self) {
             // since gtk 4.8 and only if you are using composite templates
-            self.obj().dispose_template(Self::Type);
+            self.dispose_template();
             // before gtk 4.8, for each direct child widget
             // while let Some(child) = self.obj().first_child() {
             //     child.unparent();
@@ -189,7 +189,7 @@ mod imp {
     impl ObjectImpl for SimpleWidget {
         fn dispose(&self) {
             // since gtk 4.8 and only if you are using composite templates
-            self.obj().dispose_template(Self::Type);
+            self.dispose_template();
             // before gtk 4.8, for each direct child widget
             // while let Some(child) = self.obj().first_child() {
             //     child.unparent();
@@ -239,12 +239,12 @@ Modern Linux applications should make use of the [portals](https://flatpak.githu
 
 [ASHPD](https://crates.io/crates/ashpd) is currently the way to go for using portals from Rust as it provides a convenient and idomatic API on top of the DBus one.
 
-Code example from `ashpd-0.4.0-alpha.1` for using the color picker in a desktop environment agnostic way:
+Code example from `ashpd-0.4.0-alpha.4` for using the color picker in a desktop environment agnostic way:
 ```rust
-use ashpd::desktop::screenshot::ColorResponse;
+use ashpd::desktop::screenshot::Color;
 
 async fn run() -> ashpd::Result<()> {
-    let color = ColorResponse::builder().build().await?;
+    let color = Color::builder().build().await?.response()?;
     println!("({}, {}, {})", color.red(), color.green(), color.blue());
     Ok(())
 }
@@ -256,6 +256,8 @@ async fn run() -> ashpd::Result<()> {
 Applications that need to store sensitive information, such as passwords, usually use the [Secret service](https://specifications.freedesktop.org/secret-service/latest/), a protocol supported by both `gnome-keyring` and `kwallet` nowadays. There were multiple attempts to provide a Rust wrapper for the DBus API but some common pitfalls were that they lacked async support, provided no integration with the secret portal, or they had no way to allow applications to migrate their secrets from the host keyring to the application sandboxed keyring.
 
 Those were the primary reasons we started working on [oo7](https://crates.io/crates/oo7). It is still in alpha stage, but should cover most of the use cases already.
+
+Since 0.1.0-beta.3, oo7 has a new feature for using OpenSSL for cryptographic primitives instead of Rust crypto crates.
 
 ## GStreamer
 
@@ -275,11 +277,13 @@ Kévin Commaille has submitted a [patch](https://savannah.gnu.org/bugs/?56774) f
 
 As mentioned above, subclassing code is still too verbose in some cases. Ideally, we would simplify most of it, since it is probably one of the most confusing things you have to deal with as a beginner to the gtk-rs ecosystem.
 
+* A [glib::Properties](https://gtk-rs.org/gtk-rs-core/stable/0.17/docs/glib/derive.Properties.html) derive macro is available on the glib crate as part of the 0.17 release
+
 ### Even Better Documentation
 
 I personally think our documentation has gotten a lot better in the last couple of releases but there are always things to improve. Here is my wishlist of things that I hope to find the time to work on for the next release:
 
-- Generate properties/signals documentation <https://github.com/gtk-rs/gir/issues/1076>
+- ~~Generate properties/signals documentation <https://github.com/gtk-rs/gir/issues/1076>~~
 - Basic subclassing code documentation <https://github.com/gtk-rs/gir/issues/1319>
 - Correct linking of external crates in case of manually implemented functions <https://github.com/gtk-rs/gir/issues/1197>
 - Generate a UML graph for the object hierarchy <https://github.com/gtk-rs/gir/issues/1035>
