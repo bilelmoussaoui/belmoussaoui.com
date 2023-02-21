@@ -5,12 +5,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          submodules: 'recursive'
       - name: build_and_deploy
-        uses: shalzz/zola-deploy-action@v0.14.1
+        uses: shalzz/zola-deploy-action@v0.16.1-1
         env:
+          BUILD_THEMES: false
           PAGES_BRANCH: gh-pages
-          TOKEN: $GITHUB_ACTOR:${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   codespell:
     runs-on: ubuntu-22.04
     steps:
