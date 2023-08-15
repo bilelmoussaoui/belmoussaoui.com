@@ -15,7 +15,7 @@ mermaid = false
 cc_license = true
 +++
 
-In the last few months, I have been trying to improve the default UI shipped by [QEMU](https://www.qemu.org/). As you might not know, QEMU ships with various UI frontends: GTK, SDL, Cocoa and recently a DBus backend.
+In the last few months, I have been trying to improve the default UI shipped by [QEMU](https://www.qemu.org/). As you might not know, QEMU ships with various UI backends: GTK, SDL, Cocoa and recently a DBus one.
 
 I first started trying to port the GTK 3 backend to GTK 4 but faced some issues where I couldn't use `GtkApplication` as it starts its own `GMainLoop` which interferes with some god knows what internal `GMainLoop` started by QEMU itself. My intention was not to only do a simple port but also to see how we could optimize the rendering path as well.
 
