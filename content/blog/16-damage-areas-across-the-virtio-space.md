@@ -55,7 +55,7 @@ For now, you can try libmks either by using the debugging tool shipped with the 
 
 As you can tell, a bunch of components and people were involved in this few months trip. I would like to thank everyone for taking the time to explain basic things to me as well as helping out to get this done! You can now enjoy a well deserved screen recording showing the implication of these changes
 
-<video controls width="720">
+<video controls>
   <source src="/posts/16-damage-areas-across-the-virtio-space/libmks.webm" type="video/webm" />
 
   Download the
