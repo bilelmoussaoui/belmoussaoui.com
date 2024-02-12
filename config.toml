@@ -15,8 +15,17 @@ taxonomies = [
 ]
 [markdown]
 highlight_code = true
-highlight_theme = "nord" # The highlight theme, choose one at https://www.getzola.org/documentation/getting-started/configuration/#syntax-highlighting
+highlight_theme = "nord"
 render_emoji = true
+external_links_target_blank = false
+external_links_no_follow = true
+external_links_no_referrer = true
+smart_punctuation = false
+
+[slugify]
+paths = "on"
+taxonomies = "on"
+anchors = "on"
 
 [extra]
 links = [
@@ -27,12 +36,14 @@ links = [
 ]
 sections = [
     { name = "blog", path = "/blog", is_external = false },
-    { name = "projects", path = "/projects", is_external = false },
 ]
 blog_categorized = false # Whether to categorize blog posts
 back_to_top = true # Whether to show back-to-top button on post pages
 blog_section_path = "/blog"
-homepage_layout = "about"
+homepage_layout = "recent"
+recent_max = 4
+recent_more = true
+recent_more_text = "more »"
 nav_separator = "::"
 nav_wrapper_left = "{"
 nav_wrapper_right = "} ;"
