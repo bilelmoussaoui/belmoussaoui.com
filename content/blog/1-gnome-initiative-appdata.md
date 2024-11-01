@@ -20,7 +20,7 @@ Hey everyone! Welcome to my first blog article on my brand new website. It has b
 
 ## The GNOME/initiatives, what's it?
 
-A small description from the Wiki page of the iniatives repository on GNOME's Gitlab instance: "Initiatives are cross-project goals that have wide acceptance inside the GNOME community as desired."
+A small description from the Wiki page of the initiatives repository on GNOME's Gitlab instance: "Initiatives are cross-project goals that have wide acceptance inside the GNOME community as desired."
 
 ## What's the AppData update initiative?
 

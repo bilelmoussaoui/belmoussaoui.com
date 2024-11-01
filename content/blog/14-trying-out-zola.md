@@ -60,9 +60,9 @@ zola check
 
 ### Publishing
 
-The simplest way of publishing a static website nowadays is to use something like Github/Gitlab Pages. The documentation got you covered as they include the `yaml` receipe for the popular services out there <https://www.getzola.org/documentation/deployment/overview/>.
+The simplest way of publishing a static website nowadays is to use something like Github/Gitlab Pages. The documentation got you covered as they include the `yaml` recipe for the popular services out there <https://www.getzola.org/documentation/deployment/overview/>.
 
-Although, when using the Github receipe, it seems there is an error in the documentation and you will have to do the following change for it to work
+Although, when using the Github recipe, it seems there is an error in the documentation and you will have to do the following change for it to work
 
 ```diff
 -           TOKEN: ${{ secrets.GITHUB_TOKEN }}
