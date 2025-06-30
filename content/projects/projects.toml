@@ -1,0 +1,61 @@
+[[collection]]
+type = "card"
+title = "App Icon Preview"
+content = "Tool for designing applications icons"
+link = "https://gitlab.gnome.org/World/design/app-icon-preview"
+
+[[collection]]
+type = "card"
+title = "ASHPD"
+content = "A Rust & ZBus wrapper of the XDG portals DBus interfaces"
+link = "https://github.com/bilelmoussaoui/ashpd"
+
+[[collection]]
+type = "card"
+title = "Authenticator"
+content = "Generate Two-Factor Codes"
+link = "https://gitlab.gnome.org/World/Authenticator"
+
+[[collection]]
+type = "card"
+title = "Contrast"
+content = "Checks whether the contrast between two colors meet the WCAG requirements"
+link = "https://gitlab.gnome.org/World/design/contrast"
+
+
+[[collection]]
+type = "card"
+title = "QR Code"
+content = "Scan and Generate QR Codes"
+link = "https://gitlab.gnome.org/World/decoder"
+
+
+[[collection]]
+type = "card"
+title = "Flatpak VSCode Integration"
+content = "Flatpak integration in Visual Studio Code for building & running your application"
+link = "https://github.com/bilelmoussaoui/flatpak-vscode"
+
+[[collection]]
+type = "card"
+title = "Flatpak Github Actions"
+content = "Use Flatpak in your Github CI pipeline"
+link = "https://github.com/flatpak/flatpak-github-actions/"
+
+[[collection]]
+type = "card"
+title = "Icon Library"
+content = "Symbolic Icons for your apps"
+link = "https://gitlab.gnome.org/World/design/icon-library"
+
+[[collection]]
+type = "card"
+title = "Obfuscate"
+content = "Censor private information"
+link = "https://gitlab.gnome.org/World/obfuscate"
+
+[[collection]]
+type = "card"
+title = "OO7"
+content = "James Bond went on a new mission and this time as a Secret Service provider"
+link = "https://github.com/bilelmoussaoui/oo7"
