@@ -1,6 +1,4 @@
 +++
-title = "My projects"
-template = "prose.html"
+title = "My Projects"
+template = "projects.html"
 +++
-
-{{ collection(file="projects.toml") }}
