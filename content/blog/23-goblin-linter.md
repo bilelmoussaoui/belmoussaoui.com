@@ -1,5 +1,5 @@
 +++
-title = "goblin: A Linter for GObject C Code"
+title = "goblint: A Linter for GObject C Code"
 date = 2026-04-11
 draft = false
 
@@ -16,9 +16,9 @@ cc_license = true
 outdate_warn = false
 +++
 
-Over the past week, I’ve been building **goblin**, a linter specifically designed for GObject-based C codebases.
+Over the past week, I’ve been building **goblint**, a linter specifically designed for GObject-based C codebases.
 
-If you know Rust’s `clippy` or Go’s `go vet`, think of goblin as the same thing for GObject/GLib.
+If you know Rust’s `clippy` or Go’s `go vet`, think of goblint as the same thing for GObject/GLib.
 
 ## Why this exists
 
@@ -28,11 +28,11 @@ This leads to issues like missing `dispose`/`finalize`/`constructed` chain-ups (
 
 These aren’t theoretical. [This GTK merge request](https://gitlab.gnome.org/GNOME/gtk/-/merge_requests/9789) recently fixed several missing chain-ups in example code.
 
-Despite this, the C ecosystem lacks a linter that understands GObject semantics. goblin exists to close that gap.
+Despite this, the C ecosystem lacks a linter that understands GObject semantics. goblint exists to close that gap.
 
-## What goblin checks
+## What goblint checks
 
-goblin ships with [**35 rules**](https://github.com/bilelmoussaoui/goblin/blob/main/RULES.md) across different categories:
+goblint ships with [**35 rules**](https://github.com/bilelmoussaoui/goblint/blob/main/RULES.md) across different categories:
 
 - **Correctness**: Real bugs like non-canonical property names, uninitialized `GError*`, missing `PROP_0`
 - **Suspicious**: Likely mistakes like missing implementations or redundant NULL checks
@@ -44,24 +44,24 @@ goblin ships with [**35 rules**](https://github.com/bilelmoussaoui/goblin/blob/m
 **23 out of 35 rules are auto-fixable.** You should apply fixes one rule at a time to review the changes:
 
 ```bash
-goblin --fix --only use_g_strcmp0
-goblin --fix --only use_clear_functions
+goblint --fix --only use_g_strcmp0
+goblint --fix --only use_clear_functions
 ```
 
 ## CI/CD Integration
 
-goblin fits into existing pipelines.
+goblint fits into existing pipelines.
 
 ### GitHub Actions
 
 ```yaml
-- name: Run goblin
-  run: goblin --format sarif > goblin.sarif
+- name: Run goblint
+  run: goblint --format sarif > goblint.sarif
 
 - name: Upload SARIF results
   uses: github/codeql-action/upload-sarif@v3
   with:
-    sarif_file: goblin.sarif
+    sarif_file: goblint.sarif
 ```
 
 Results show up in the Security tab under "Code scanning" and inline on pull requests.
@@ -69,20 +69,20 @@ Results show up in the Security tab under "Code scanning" and inline on pull req
 ### GitLab CI
 
 ```yaml
-goblin:
-  image: ghcr.io/bilelmoussaoui/goblin:latest
+goblint:
+  image: ghcr.io/bilelmoussaoui/goblint:latest
   script:
-    - goblin --format sarif > goblin.sarif
+    - goblint --format sarif > goblint.sarif
   artifacts:
     reports:
-      sast: goblin.sarif
+      sast: goblint.sarif
 ```
 
 Results appear inline in merge requests.
 
 ## Configuration
 
-Rules default to `warn`, and can be tuned via `goblin.toml`:
+Rules default to `warn`, and can be tuned via `goblint.toml`:
 
 ```toml
 min_glib_version = "2.40"  # Auto-disable rules for newer versions
@@ -102,15 +102,19 @@ You can adopt it gradually without fixing everything at once.
 
 ```bash
 # Run via container
-podman run --rm -v "$PWD:/workspace:Z" ghcr.io/bilelmoussaoui/goblin:latest
+podman run --rm -v "$PWD:/workspace:Z" ghcr.io/bilelmoussaoui/goblint:latest
 
 # Install locally
-cargo install --git https://github.com/bilelmoussaoui/goblin goblin
+cargo install --git https://github.com/bilelmoussaoui/goblint goblint
 
 # Usage
-goblin              # Lint current directory
-goblin --fix        # Apply automatic fixes
-goblin --list-rules # Inspect available rules
+goblint              # Lint current directory
+goblint --fix        # Apply automatic fixes
+goblint --list-rules # Inspect available rules
 ```
 
-The [project](https://github.com/bilelmoussaoui/goblin) is early, so feedback is especially valuable (false positives, missing checks, workflow issues, etc.).
+The [project](https://github.com/bilelmoussaoui/goblint) is early, so feedback is especially valuable (false positives, missing checks, workflow issues, etc.).
+
+---
+
+**Note:** The project was originally named "goblin" but was renamed to "goblint" to avoid conflicts with the existing [goblin](https://crates.io/crates/goblin) crate for parsing binary formats.
