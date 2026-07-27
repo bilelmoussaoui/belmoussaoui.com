@@ -1,7 +1,7 @@
 +++
 title = "Integrating codespell into your CI"
+draft = true
 date = 2020-10-02
-draft = false
 
 [taxonomies]
 categories = ["CI"]
@@ -15,13 +15,13 @@ mermaid = false
 cc_license = true
 +++
 
-If you have never heard of [codespell](https://github.com/codespell-project/codespell), it's a command line utility to check for common misspellings with the possibility to add your own dictionaries. I have looked lately at integrating it as part of the CI for some of my projects. 
+If you have never heard of [codespell](https://github.com/codespell-project/codespell), it's a command line utility to check for common misspellings with the possibility to add your own dictionaries. I have looked lately at integrating it as part of the CI for some of my projects.
 
 # Gitlab CI
 
-Currently codespell doesn't provide a docker image that could be used for CI. You can create your own or use a pretty simple [image](https://hub.docker.com/r/bilelmoussaoui/codespell) I have setup and pushed to <https://hub.docker.com>. 
+Currently codespell doesn't provide a docker image that could be used for CI. You can create your own or use a pretty simple [image](https://hub.docker.com/r/bilelmoussaoui/codespell) I have setup and pushed to <https://hub.docker.com>.
 
-The docker image is a simple as 
+The docker image is a simple as
 
 ```dockerfile
 FROM python:3.8
@@ -42,7 +42,7 @@ You can find more about the possible options you can pass by running `codepsell 
 
 # Github Actions
 
-Codespell provides a [Github Action](https://github.com/codespell-project/actions-codespell) so integrating it as a workflow should be straightforward 
+Codespell provides a [Github Action](https://github.com/codespell-project/actions-codespell) so integrating it as a workflow should be straightforward
 
 ```yaml
 on:

@@ -120,7 +120,7 @@ The specs contains enough information about that, but here’s an example of suc
     </screenshot>
   </screenshots>
   <url type="homepage">https://belmoussaoui.com/</url>
-<!--
+  <!--
 Open Age Rating Service
 https://hughsie.github.io/oars/index.html
 -->
@@ -198,6 +198,7 @@ dependency('gtk+-3.0')
 Let’s create a `data` directory and put our desktop, metainfo files and icons on it. You can name it differently, it’s just a convention.
 
 We need to tell Meson to check the build receipt we will have in `src` and `data`
+
 ```meson
 subdir('data')
 subdir('src')
@@ -261,6 +262,7 @@ cargo_release = custom_target(
 And by convention I put the script to call under `build-aux/cargo.sh`
 
 The content of the file should be
+
 ```bash
 #!/bin/sh
 
@@ -293,7 +295,7 @@ We can try that our Meson build is working by typing
 
 ```bash
 meson _builddir --prefix=/tmp
-ninja -C _builddir 
+ninja -C _builddir
 ```
 
 Before we start writing our Flatpak manifest, please take a short tour at <https://docs.flatpak.org/en/latest/> to read about the basics of Flatpak.
@@ -304,41 +306,41 @@ We will be writing our manifest in JSON, you could use a YAML file too.
 
 ```json
 {
-    "app-id": "com.belmoussaoui.RustFlatpak",
-    "runtime": "org.freedesktop.Platform",
-    "runtime-version": "20.08",
-    "sdk": "org.freedesktop.Sdk",
-    "sdk-extensions" : [
-        "org.freedesktop.Sdk.Extension.rust-stable"
+  "app-id": "com.belmoussaoui.RustFlatpak",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "20.08",
+  "sdk": "org.freedesktop.Sdk",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable"
+  ],
+  "command": "rust-flatpak",
+  "finish-args": [
+    "--share=ipc",
+    "--socket=fallback-x11",
+    "--socket=wayland",
+    "--device=dri"
+  ],
+  "build-options": {
+    "append-path": "/usr/lib/sdk/rust-stable/bin",
+    "build-args": [
+      "--share=network"
     ],
-    "command": "rust-flatpak",
-    "finish-args": [
-        "--share=ipc",
-        "--socket=fallback-x11",
-        "--socket=wayland",
-        "--device=dri"
-    ],
-    "build-options": {
-        "append-path" : "/usr/lib/sdk/rust-stable/bin",
-        "build-args" : [
-            "--share=network"
-        ],
-        "env" : {
-            "CARGO_HOME" : "/run/build/rust-flatpak/cargo"
-        }
-    },
-    "modules": [
+    "env": {
+      "CARGO_HOME": "/run/build/rust-flatpak/cargo"
+    }
+  },
+  "modules": [
+    {
+      "name": "rust-flatpak",
+      "buildsystem": "meson",
+      "sources": [
         {
-            "name": "rust-flatpak",
-            "buildsystem": "meson",
-            "sources": [
-                {
-                    "type": "dir",
-                    "path": "../"
-                }
-            ]
+          "type": "dir",
+          "path": "../"
         }
-    ]
+      ]
+    }
+  ]
 }
 ```
 
@@ -395,47 +397,47 @@ The script depends on the python module `siphash`
 
 ```json
 {
-    "app-id": "com.belmoussaoui.RustFlatpak",
-    "runtime": "org.freedesktop.Platform",
-    "runtime-version": "20.08",
-    "sdk": "org.freedesktop.Sdk",
-    "sdk-extensions" : [
-        "org.freedesktop.Sdk.Extension.rust-stable"
-    ],
-    "command": "rust-flatpak",
-    "finish-args": [
-        "--share=ipc",
-        "--socket=fallback-x11",
-        "--socket=wayland",
-        "--device=dri"
-    ],
-    "build-options": {
-        "append-path" : "/usr/lib/sdk/rust-stable/bin",
-        "env" : {
-            "CARGO_HOME" : "/run/build/rust-flatpak/cargo"
-        }
-    },
-    "modules": [
+  "app-id": "com.belmoussaoui.RustFlatpak",
+  "runtime": "org.freedesktop.Platform",
+  "runtime-version": "20.08",
+  "sdk": "org.freedesktop.Sdk",
+  "sdk-extensions": [
+    "org.freedesktop.Sdk.Extension.rust-stable"
+  ],
+  "command": "rust-flatpak",
+  "finish-args": [
+    "--share=ipc",
+    "--socket=fallback-x11",
+    "--socket=wayland",
+    "--device=dri"
+  ],
+  "build-options": {
+    "append-path": "/usr/lib/sdk/rust-stable/bin",
+    "env": {
+      "CARGO_HOME": "/run/build/rust-flatpak/cargo"
+    }
+  },
+  "modules": [
+    {
+      "name": "rust-flatpak",
+      "buildsystem": "simple",
+      "build-commands": [
+        "cargo --offline fetch --manifest-path Cargo.toml --verbose",
+        "cargo --offline build --release --verbose",
+        "install -Dm755 ./target/debug/rust-flatpak -t /app/bin/",
+        "install -Dm644 ./data/${FLATPAK_ID}.metainfo.xml -t /app/share/metainfo/",
+        "install -Dm644 ./data/${FLATPAK_ID}.desktop -t /app/share/applications/",
+        "install -Dm644 ./data/${FLATPAK_ID}.svg -t /app/share/icons/hicolor/scalable/apps/"
+      ],
+      "sources": [
         {
-            "name": "rust-flatpak",
-            "buildsystem": "simple",
-            "build-commands": [
-                "cargo --offline fetch --manifest-path Cargo.toml --verbose",
-                "cargo --offline build --release --verbose",
-                "install -Dm755 ./target/debug/rust-flatpak -t /app/bin/",
-                "install -Dm644 ./data/${FLATPAK_ID}.metainfo.xml -t /app/share/metainfo/",
-                "install -Dm644 ./data/${FLATPAK_ID}.desktop -t /app/share/applications/",
-                "install -Dm644 ./data/${FLATPAK_ID}.svg -t /app/share/icons/hicolor/scalable/apps/"
-            ],
-            "sources": [
-                {
-                    "type": "dir",
-                    "path": "../"
-                },
-                "generated-sources.json"
-            ]
-        }
-    ]
+          "type": "dir",
+          "path": "../"
+        },
+        "generated-sources.json"
+      ]
+    }
+  ]
 }
 ```
 

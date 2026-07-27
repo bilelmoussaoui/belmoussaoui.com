@@ -16,10 +16,9 @@ cc_license = true
 outdate_warn = true
 +++
 
+One major pain points of writing a desktop application that interacts with the user's desktop is that a "simple" task can easily become complex. If you want to write a colour palette generator and you wanted to pick a colour, how would you do that?
 
-One major pain points of writing a desktop application that interacts with the user's desktop is that a "simple" task can easily become complex.  If you want to write a colour palette generator and you wanted to pick a colour, how would you do that? 
-
-GNOME Shell for example provides a DBus interface `org.gnome.Shell.Screenshot` that you can communicate with by calling the `PickColor` method. The method returns a HashMap containing a single key `{"color" : [f64;3] }`. Thankfully with zbus calling a DBus method is pretty straightforward. 
+GNOME Shell for example provides a DBus interface `org.gnome.Shell.Screenshot` that you can communicate with by calling the `PickColor` method. The method returns a HashMap containing a single key `{"color" : [f64;3] }`. Thankfully with zbus calling a DBus method is pretty straightforward.
 
 ```rust
 use zbus::dbus_proxy;
@@ -32,7 +31,7 @@ trait Screenshot {
 }
 ```
 
-By using the [dbus_proxy](https://docs.rs/zbus/1.1.1/zbus/attr.dbus_proxy.html) macro, we can generate a [Proxy](https://docs.rs/zbus/1.1.1/zbus/struct.Proxy.html) containing the only method we care about. We can then use our auto generated `ScreenshotProxy` to call the pick colour method 
+By using the [dbus_proxy](https://docs.rs/zbus/1.1.1/zbus/attr.dbus_proxy.html) macro, we can generate a [Proxy](https://docs.rs/zbus/1.1.1/zbus/struct.Proxy.html) containing the only method we care about. We can then use our auto generated `ScreenshotProxy` to call the pick colour method
 
 ```rust
 fn main() -> zbus::fdo::Result<()> {
@@ -55,11 +54,11 @@ fn main() -> zbus::fdo::Result<()> {
 }
 ```
 
-That looks simple if you were targeting GNOME Shell as the only desktop environment.  Supporting other desktop environments like KDE or any X11 based one for example would require more code from the application developer side.
+That looks simple if you were targeting GNOME Shell as the only desktop environment. Supporting other desktop environments like KDE or any X11 based one for example would require more code from the application developer side.
 
 # Introducing portals
 
-Portals as in XDG portals, are a bunch of DBus interfaces as a specification that a desktop environment can implement. An application developer can then communicate with the XDG portal DBus interface instead of the desktop environment specific one. The portal implementation will take care of calling the available backend.  By their nature, the portals can't be tied to Flatpak except the few portals that were made especially for Flatpak'ed applications like the update monitor one.
+Portals as in XDG portals, are a bunch of DBus interfaces as a specification that a desktop environment can implement. An application developer can then communicate with the XDG portal DBus interface instead of the desktop environment specific one. The portal implementation will take care of calling the available backend. By their nature, the portals can't be tied to Flatpak except the few portals that were made especially for Flatpak'ed applications like the update monitor one.
 
 You can find the list of the available portals by looking at the [specifications](https://flatpak.github.io/xdg-desktop-portal/index.html#idm28). Let's try to reimplement the same thing using the [XDG portal](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-method-org-freedesktop-portal-Screenshot.PickColor) instead of the GNOME Shell one. As portals requires a user interaction, most of the method calls in the various portals returns an [ObjectPath](https://docs.rs/zvariant/2.1.0/zvariant/struct.ObjectPath.html) like this one `/org/freedesktop/portal/desktop/request/SENDER/TOKEN` that represents a [Request](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-org.freedesktop.portal.Request). We should then listen to a [Response](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-signal-org-freedesktop-portal-Request.Response) signal to get the result.
 
@@ -93,7 +92,7 @@ let request_handle = proxy.pick_color("", HashMap::new())?;
 println!("{:#?}", request_handle.as_str());
 ```
 
-Now that we have the necessary object path we can listen to a response signal.  As of today, zbus doesn't provide a higher level API to await for a response signal. We will do with a simple loop as we can break out of it once we have received a Response signal.
+Now that we have the necessary object path we can listen to a response signal. As of today, zbus doesn't provide a higher level API to await for a response signal. We will do with a simple loop as we can break out of it once we have received a Response signal.
 
 ```rust
 loop {
@@ -108,7 +107,7 @@ loop {
 }
 ```
 
-The type T here should implement `zvariant::Type` & `serde::de::DeserializeOwned`. From the [signal documentation](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-signal-org-freedesktop-portal-Request.Response) we can figure out the struct we would need to de-serialize a typical response 
+The type T here should implement `zvariant::Type` & `serde::de::DeserializeOwned`. From the [signal documentation](https://flatpak.github.io/xdg-desktop-portal/index.html#gdbus-signal-org-freedesktop-portal-Request.Response) we can figure out the struct we would need to de-serialize a typical response
 
 ```rust
 use serde_repr::{Deserialize_repr, Serialize_repr};
@@ -130,7 +129,7 @@ enum ResponseType {
 pub struct Response(ResponseType, HashMap<String, OwnedValue>);
 ```
 
-We can now de-serialize the body into a Response and call a `FnOnce` on it.  The HashMap in the case of a pick colour call will contain a single key `color` with a `[f64;3]` value. [zvariant_derive](https://docs.rs/zvariant_derive/2.1.0/zvariant_derive/) has a neat macro that allow us to de-serialize a `a{sv}` into a struct.
+We can now de-serialize the body into a Response and call a `FnOnce` on it. The HashMap in the case of a pick colour call will contain a single key `color` with a `[f64;3]` value. [zvariant_derive](https://docs.rs/zvariant_derive/2.1.0/zvariant_derive/) has a neat macro that allow us to de-serialize a `a{sv}` into a struct.
 
 ```rust
 use zvariant_derive::{SerializeDict, DeserializeDict, TypeDict};
@@ -169,11 +168,11 @@ fn main() -> zbus::fdo::Result<()> {
 }
 ```
 
-Despite zbus being pretty straightforward to use, using portals requires the developer to look at the specifications and figure out which options a portal request can take or the possible responses that you might receive.  Those were the primary reasons I wrote ASHPD.
+Despite zbus being pretty straightforward to use, using portals requires the developer to look at the specifications and figure out which options a portal request can take or the possible responses that you might receive. Those were the primary reasons I wrote ASHPD.
 
 # The ASHPD crate
 
-an acronym of Aperture Science Handheld Portal Device, which is the name of the portal gun in the Portal game, is a crate that aims to provide a simple API around the portals to consume from Rust. 
+an acronym of Aperture Science Handheld Portal Device, which is the name of the portal gun in the Portal game, is a crate that aims to provide a simple API around the portals to consume from Rust.
 
 Let's see how can we pick the colour now using ashpd
 

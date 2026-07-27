@@ -15,7 +15,6 @@ mermaid = false
 cc_license = true
 +++
 
-
 Mutter, if you don't know what it is, is a Wayland display server and an X11 window manager and compositor library. It used by [GNOME Shell](https://gitlab.gnome.org/GNOME/gnome-shell/), [Gala](https://github.com/elementary/gala/), [GNOME Kiosk](https://gitlab.gnome.org/GNOME/gnome-kiosk/) and possibly other old forks out there.
 
 The project was born from merging [Clutter](https://gitlab.gnome.org/Archive/clutter), [Cogl](https://gitlab.gnome.org/Archive/cogl) and [Metacity](https://en.wikipedia.org/wiki/Metacity) so it has/had a lot of cruft and technical debts carried over time.

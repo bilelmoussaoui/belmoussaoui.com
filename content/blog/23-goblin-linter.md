@@ -85,12 +85,12 @@ Results appear inline in merge requests.
 Rules default to `warn`, and can be tuned via `goblint.toml`:
 
 ```toml
-min_glib_version = "2.40"  # Auto-disable rules for newer versions
+min_glib_version = "2.40" # Auto-disable rules for newer versions
 
 [rules]
-g_param_spec_static_name_canonical = "error"  # Make critical
-use_g_strcmp0 = "warn"  # Keep as warning
-use_g_autoptr_inline_cleanup = "ignore"  # Disable
+g_param_spec_static_name_canonical = "error" # Make critical
+use_g_strcmp0 = "warn" # Keep as warning
+use_g_autoptr_inline_cleanup = "ignore" # Disable
 
 # Per-rule ignore patterns
 missing_implementation = { level = "error", ignore = ["src/backends/**"] }

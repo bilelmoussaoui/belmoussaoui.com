@@ -45,7 +45,7 @@ Inside GNOME Shell `StWidget`, the widget abstraction, overrides the `ClutterAct
 - Call `atk_object_initialize` on it
 - Keep a weak reference to it
 
-After "upstreaming" both `StWidgetClass.get_accessible_type` and their override of `ClutterActorClass.get_accessible` to become the default behavior, I managed to completely get rid of the factories.  The remainder of the migration was mostly renaming things and trying to emit accessibility state changes when the `Clutter` type updated its state where possible.
+After "upstreaming" both `StWidgetClass.get_accessible_type` and their override of `ClutterActorClass.get_accessible` to become the default behavior, I managed to completely get rid of the factories. The remainder of the migration was mostly renaming things and trying to emit accessibility state changes when the `Clutter` type updated its state where possible.
 
 <b>The patches are available at</b>:
 

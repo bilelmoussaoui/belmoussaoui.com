@@ -1,7 +1,7 @@
 +++
 title = "Build win32/win64 nightlies using Gitlab CI"
+draft = true
 date = 2019-09-30
-draft = false
 
 [taxonomies]
 categories = ["GNOME", "CI"]

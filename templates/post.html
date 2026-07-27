@@ -1,0 +1,186 @@
+{% extends "_base.html" %}
+{% block lang -%}
+  {%- if page.extra.lang %}{{ page.extra.lang }}{% else %}{{ page.lang }}{% endif -%}
+{%- endblock %}
+{% block title %}{{ page.title }} - {{ config.title }}{% endblock %}
+{% block desc %}
+  {% if page.summary %}
+    <meta name="description" content="{{ page.summary | striptags | truncate(length=160) }}">
+  {% elif page.description %}
+    <meta name="description" content="{{ page.description }}">
+  {% endif %}
+{% endblock %}
+
+{% block og %}
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="{{ page.title }}">
+  {% if page.summary %}
+    <meta property="og:description" content="{{ page.summary | striptags | truncate(length=200) }}">
+    <meta name="twitter:description" content="{{ page.summary | striptags | truncate(length=200) }}">
+  {% elif page.description %}
+    <meta property="og:description" content="{{ page.description }}">
+    <meta name="twitter:description" content="{{ page.description }}">
+  {% endif %}
+  <meta property="og:url" content="{{ page.permalink }}">
+  <meta property="article:published_time" content="{{ page.date | date(format='%Y-%m-%d') }}">
+  {% if page.updated %}
+    <meta property="article:modified_time" content="{{ page.updated | date(format='%Y-%m-%d') }}">
+  {% endif %}
+  {% if page.taxonomies.tags is defined %}
+    {% for tag in page.taxonomies.tags %}
+      <meta property="article:tag" content="{{ tag }}">
+    {% endfor %}
+  {% endif %}
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ page.title }}">
+{% endblock og %}
+
+{% block main_class %}max-w-screen-xl mx-auto px-5 sm:px-6 lg:px-10{% endblock %}
+
+{% block content %}
+  {% if page.extra.toc is defined %}
+    {% set show_toc = page.extra.toc %}
+  {% else %}
+    {% set show_toc = config.extra.toc %}
+  {% endif %}
+
+  <div class="mb-6">
+    <a href="/" class="text-sm text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300">&larr; {{ config.extra.name }}</a>
+  </div>
+
+  <div class="flex justify-between">
+    <article class="min-w-0 max-w-content flex-1">
+      <h1 class="text-2xl sm:text-4xl font-bold text-gray-900 dark:text-gray-100 leading-tight mb-3">{{ page.title }}</h1>
+
+      <div class="mb-8 sm:mb-10">
+        <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-500 dark:text-gray-400">
+          <time datetime="{{ page.date | date(format='%Y-%m-%d') }}">
+            {{ page.date | date(format="%b %-d, %Y") }}
+          </time>
+          {% if page.updated and page.updated != page.date %}
+            <span class="text-gray-300 dark:text-gray-600">&middot;</span>
+            <span>Updated {{ page.updated | date(format="%b %-d, %Y") }}</span>
+          {% endif %}
+          <span class="text-gray-300 dark:text-gray-600">&middot;</span>
+          <span>{{ page.reading_time }} min read</span>
+          {% if page.taxonomies.tags is defined and config.extra.display_tags and page.taxonomies.tags | length > 0 %}
+            {% for tag in page.taxonomies.tags %}
+              <span class="text-gray-300 dark:text-gray-600">&middot;</span>
+              <a href="/tags/{{ tag | slugify }}" class="text-gray-400 dark:text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 no-underline">
+                #{{ tag }}
+              </a>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+
+      {% if page.extra.outdate_warn is defined %}
+        {% set show_outdate = page.extra.outdate_warn %}
+      {% else %}
+        {% set show_outdate = config.extra.outdate_alert %}
+      {% endif %}
+      {% if show_outdate %}
+        <div id="outdate-alert"
+             class="hidden border-l-2 border-gray-300 dark:border-neutral-600 pl-4 mb-8 text-sm text-gray-500 dark:text-gray-400"
+             data-days="{{ config.extra.outdate_alert_days }}"
+             data-text-before="{{ config.extra.outdate_alert_text_before }}"
+             data-text-after="{{ config.extra.outdate_alert_text_after }}"
+             data-publish-date="{{ page.date | date(format='%Y-%m-%d') }}"
+             {% if page.updated %}
+               data-updated-date="{{ page.updated | date(format='%Y-%m-%d') }}"
+             {% endif %}>
+          <span></span>
+        </div>
+      {% endif %}
+
+      {% if page.extra.copy is defined %}
+        {% set allow_copy = page.extra.copy %}
+      {% else %}
+        {% set allow_copy = config.extra.copy %}
+      {% endif %}
+      {% if allow_copy %}
+        <div id="copy-cfg" class="hidden" data-enabled="true"></div>
+      {% endif %}
+
+      <div class="prose prose-lg">
+        {% if page.extra.truncate_summary is defined %}
+          {% set truncate_summary = page.extra.truncate_summary %}
+        {% elif config.extra.truncate_summary is defined %}
+          {% set truncate_summary = config.extra.truncate_summary %}
+        {% else %}
+          {% set truncate_summary = false %}
+        {% endif %}
+        {% if truncate_summary == true and page.summary %}
+          {{ page.content | trim_start_matches(pat=page.summary) | safe }}
+        {% else %}
+          {{ page.content | safe }}
+        {% endif %}
+      </div>
+    </article>
+
+    {% if show_toc and page.toc %}
+      <aside class="hidden lg:block w-56 flex-shrink-0">
+        <nav class="sticky top-6 max-h-[calc(100vh-4rem)] overflow-y-auto">
+          <h2 class="font-medium text-gray-900 dark:text-gray-100 mb-3 text-xs uppercase tracking-wider">On this page</h2>
+          <ul class="space-y-1.5 border-l border-gray-200 dark:border-neutral-800">
+            {% for h2 in page.toc %}
+              <li>
+                <a href="#{{ h2.id | safe }}"
+                   class="block pl-3 py-0.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 border-l-2 border-transparent hover:border-gray-400 dark:hover:border-gray-500 -ml-px leading-snug">
+                  {{ h2.title }}
+                </a>
+                {% if h2.children %}
+                  <ul class="mt-1">
+                    {% for h3 in h2.children %}
+                      <li>
+                        <a href="#{{ h3.id | safe }}"
+                           class="block pl-6 py-0.5 text-xs text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-gray-100 border-l-2 border-transparent hover:border-gray-400 dark:hover:border-gray-500 -ml-px leading-snug">
+                          {{ h3.title }}
+                        </a>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </nav>
+      </aside>
+    {% endif %}
+  </div>
+
+  {% if page.lower or page.higher %}
+    <nav class="max-w-content mt-16 pt-8 border-t border-gray-200 dark:border-neutral-800">
+      <div class="flex justify-between gap-6">
+        {% if page.higher %}
+          <a href="{{ page.higher.permalink }}" class="group flex-1 min-w-0">
+            <span class="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mb-1">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+              </svg>
+              Previous
+            </span>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:underline line-clamp-1">
+              {{ page.higher.title }}
+            </span>
+          </a>
+        {% else %}
+          <div class="flex-1"></div>
+        {% endif %}
+        {% if page.lower %}
+          <a href="{{ page.lower.permalink }}" class="group flex-1 min-w-0 text-right">
+            <span class="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1 mb-1 justify-end">
+              Next
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+              </svg>
+            </span>
+            <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:underline line-clamp-1">
+              {{ page.lower.title }}
+            </span>
+          </a>
+        {% endif %}
+      </div>
+    </nav>
+  {% endif %}
+{% endblock %}

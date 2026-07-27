@@ -102,6 +102,6 @@ async fn main() -> ashpd::Result<()> {
 
 And that’s it—you’ve implemented your first portal frontend!
 
-Currently, the backend feature doesn't yet support  [session-based portals](https://flatpak.github.io/xdg-desktop-portal/docs/sessions.html), but we hope to add that functionality in the near future.
+Currently, the backend feature doesn't yet support [session-based portals](https://flatpak.github.io/xdg-desktop-portal/docs/sessions.html), but we hope to add that functionality in the near future.
 
 With over 1 million downloads, ASHPD has come a long way, and it wouldn’t have been possible without the support and contributions from the community. A huge thank you to everyone who has helped make this library what it is today.

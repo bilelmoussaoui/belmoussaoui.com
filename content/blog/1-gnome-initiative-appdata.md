@@ -1,7 +1,7 @@
 +++
 title = "GNOME Initiative: AppData update"
+draft = true
 date = 2019-01-14
-draft = false
 
 [taxonomies]
 categories = ["GNOME", "Updates"]

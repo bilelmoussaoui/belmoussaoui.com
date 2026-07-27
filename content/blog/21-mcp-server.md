@@ -15,7 +15,8 @@ mermaid = false
 cc_license = true
 outdate_warn = true
 +++
-The usage of Large Language Models (LLMs) has become quite popular, especially with publicly and *"freely"* accessible tools like ChatGPT, Google Gemini, and other models. They're now even accessible from the CLI, which makes them a bit more interesting for the nerdier among us.
+
+The usage of Large Language Models (LLMs) has become quite popular, especially with publicly and _"freely"_ accessible tools like ChatGPT, Google Gemini, and other models. They're now even accessible from the CLI, which makes them a bit more interesting for the nerdier among us.
 
 One game-changer for LLMs is the development of the Model Context Protocol (MCP), which allows an external process to feed information (**resources**) to the model in real time. This could be your IDE, your browser, or even your desktop environment. It also enables the LLM to trigger predefined actions (**tools**) exposed by the MCP server. The protocol is basically JSON-RPC over socket communication, which makes it easy to implement in languages like Rust.
 
@@ -29,8 +30,8 @@ Over the weekend, I decided not only to explore building an MCP server that inte
 
 The first step was to figure out what would be simple yet meaningful to give the LLM access to, to see:
 
-* if it could recognize that an MCP server was feeding it live context, and
-* how well it could write code around that, lol.
+- if it could recognize that an MCP server was feeding it live context, and
+- how well it could write code around that, lol.
 
 I started by exposing the list of installed applications on the system, along with the ability to launch them. That way, I could say something like: _"Start my work environment"_, and it would automatically open my favorite text editor, terminal emulator, and web browser.
 
@@ -49,6 +50,7 @@ My takeaway from this is that LLMs will always require human supervision to ensu
 ## Final product
 
 The experience allowed us (me and the LLM pet) to build a simple yet powerful tool that can give your LLM access to the following resources:
+
 - Applications list
 - Audio and media status (MPRIS)
 - Calendar events
@@ -56,6 +58,7 @@ The experience allowed us (me and the LLM pet) to build a simple yet powerful to
 - Todo list
 
 And we built the following tools:
+
 - Application launcher
 - Audio and media control (MPRIS)
 - Notifications, allowing sending a new notification

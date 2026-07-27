@@ -16,10 +16,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          submodules: recursive
 
-      - name: build_and_deploy
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build CSS
+        run: npx tailwindcss -i ./input.css -o ./static/css/main.css --minify
+
+      - name: Build site
         uses: shalzz/zola-deploy-action@v0.19.2
         env:
           BUILD_THEMES: false

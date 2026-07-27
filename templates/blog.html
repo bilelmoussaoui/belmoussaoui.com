@@ -1,0 +1,30 @@
+{% extends "_base.html" %}
+{% block title %}Posts - {{ config.title }}{% endblock %}
+{% block desc %}
+  {% if section.description %}<meta name="description" content="{{ section.description }}">{% endif %}
+{% endblock %}
+
+{% block content %}
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-8">Posts</h1>
+  <div class="space-y-4">
+    {% for post in section.pages %}
+      <a href="{{ post.permalink }}" class="block group py-1">
+        <div class="flex justify-between items-baseline gap-4">
+          <span class="text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 font-medium truncate">
+            {{ post.title }}
+          </span>
+          <span class="text-sm text-gray-400 dark:text-gray-500 whitespace-nowrap flex-shrink-0 tabular-nums">
+            {{ post.date | date(format="%b %-d, %Y") }}
+          </span>
+        </div>
+        {% if post.taxonomies.tags is defined and config.extra.display_tags and post.taxonomies.tags | length > 0 %}
+          <div class="flex gap-2 mt-1">
+            {% for tag in post.taxonomies.tags %}
+              <span class="text-xs text-gray-400 dark:text-gray-500">#{{ tag }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </a>
+    {% endfor %}
+  </div>
+{% endblock %}

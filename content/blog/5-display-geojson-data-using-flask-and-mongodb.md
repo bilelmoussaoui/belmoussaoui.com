@@ -20,6 +20,7 @@ cc_license = true
 The usage of **MongoDB** is not arbitrary here, as it allows us to store geolocation data easily. You might need to install it on your system before following this article.
 
 Let's set up a new virtual environment using **virtualenv**
+
 ```bash
 virtualenv flask-mongodb
 source ./flask-mongodb/bin/activate
@@ -54,13 +55,13 @@ Flask uses **Jinja2** as a templates engine, it allow us to render HTML template
 ```html
 <!DOCTYPE html>
 <head>
-    <title>GeoJSON + Flask + MongoDB</title>
-    <meta charset="utf-8">
+  <title>GeoJSON + Flask + MongoDB</title>
+  <meta charset="utf-8">
 </head>
 <body>
-    <h1>
-        Let's display some nice maps here!
-    </h1>
+  <h1>
+    Let's display some nice maps here!
+  </h1>
 </body>
 </html>
 ```
@@ -90,6 +91,7 @@ from pymongo import MongoClient
 client = MongoClient()
 db = client.geojson_flask
 ```
+
 Let's add some geospatial data that we can display later.
 
 ```python
@@ -127,40 +129,44 @@ Flask provides a jsonify method which converts our dict object to a JSON object 
 In order to display our map, we will be using [Leaflet](https://leafletjs.com/), which is a JS library that allows us to interact with maps easily. We won't be using any JS build system here, if you are using VueJS in your project, you can use Vue2Leaflet.
 
 Let's add the JS & CSS files to our HTML file
+
 ```html
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+/>
 <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
 ```
 
 We can now create a new map using Leaflet and pass the center position and the zoom level.
 
 ```html
-<div id="map" style="height: 80vh;"></div>
+<div id="map" style="height: 80vh"></div>
 
 <script>
-let map = L.map('map').setView([51.505, -0.09], 13)   
+let map = L.map('map').setView([51.505, -0.09], 13);
 </script>
 ```
 
 If you want to center the map on the user's current location, you can use this, which will ask the user to allow your website to access their current geolocation and update the center to that position.
 
 ```javascript
-var map = L.map('map').setView([51.505, -0.09], 13)
+var map = L.map('map').setView([51.505, -0.09], 13);
 if (navigator.geolocation) {
-	navigator.geolocation.getCurrentPosition((position) => {
-		map.panTo(L.latLng(position.coords.latitude, position.coords.longitude))
-	})
+  navigator.geolocation.getCurrentPosition((position) => {
+    map.panTo(L.latLng(position.coords.latitude, position.coords.longitude));
+  });
 }
 ```
 
 If we run the current code, nothing will be displayed on our map as we need to specify a tile provider first. We will be using Open Street Map
 
 ```javascript
-L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: 'OSM' }).addTo(map)
+L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', { attribution: 'OSM' })
+  .addTo(map);
 ```
 
 ![Rendered maps using leaflet](/posts/4-display-geojson-data-using-flask-and-mongodb/Screenshot-from-2019-06-28-22-17-19.png)
-
 
 Yay, our map is finally showing up! Let's fetch the data from that simple API endpoint we have made before and add those to our Leaflet map.
 
@@ -171,17 +177,18 @@ Let’s fetch the data from that simple API endpoint we have made before and add
 ```
 
 We can fetch the data from our API endpoint using axios.get
+
 ```javascript
 axios.get('http://127.0.0.1:5000/points')
-    .then(response => {
-        console.log(response.data)
-    })
+  .then(response => {
+    console.log(response.data);
+  });
 ```
 
 Leaflet supports creating a GeoJSON layer and display it on the map
 
 ```javascript
-L.geoJSON(response.data, {}).addTo(map)
+L.geoJSON(response.data, {}).addTo(map);
 ```
 
 As you can see, the advantages of using Leaflet to display the data we have stored on our MongoDB pretty easy, as we won't need to change much in our code in the future if we want to display in kind of GeoJSON features.
@@ -232,39 +239,39 @@ app.run()
 <!DOCTYPE html>
 
 <head>
-    <title>GeoJSON + Flask + MongoDB</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <title>GeoJSON + Flask + MongoDB</title>
+  <meta charset="utf-8">
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css"
+  />
+  <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 </head>
 
 <body>
-    <h1>
-        Let's display some nice maps here!
-    </h1>
-    <div id="map" style="height: 80vh;"></div>
+  <h1>
+    Let's display some nice maps here!
+  </h1>
+  <div id="map" style="height: 80vh"></div>
 
-    <script>
+  <script>
+  var map = L.map('map').setView([51.505, -0.09], 13);
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition((position) => {
+      map.panTo(L.latLng(position.coords.latitude, position.coords.longitude));
+    });
+  }
+  L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: 'Open street map',
+  }).addTo(map);
 
-        var map = L.map('map').setView([51.505, -0.09], 13)
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
-                map.panTo(L.latLng(position.coords.latitude, position.coords.longitude))
-            })
-        }
-        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
-            attribution: 'Open street map'
-        }).addTo(map)
-
-        axios.get('http://127.0.0.1:5000/geojson-features')
-            .then(response => {
-                console.log(response.data)
-                L.geoJSON(response.data, {}).addTo(map);
-
-            })
-    </script>
-
+  axios.get('http://127.0.0.1:5000/geojson-features')
+    .then(response => {
+      console.log(response.data);
+      L.geoJSON(response.data, {}).addTo(map);
+    });
+  </script>
 </body>
 </html>
 ```

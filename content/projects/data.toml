@@ -1,79 +1,87 @@
 [[project]]
-name = "App Icon Preview"
-desc = "Tool for designing applications icons"
-links = [
- { name = "Source", url = "https://gitlab.gnome.org/World/design/app-icon-preview"},
-]
-tags = ["app"]
-
-[[project]]
 name = "ASHPD"
-desc = "A Rust & ZBus wrapper of the XDG portals DBus interfaces"
+desc = "A Rust & zbus wrapper of the XDG portals DBus interfaces, with backend interfaces support"
 links = [
- { name = "Source", url = "https://github.com/bilelmoussaoui/ashpd" }
+  { name = "Source", url = "https://github.com/bilelmoussaoui/ashpd" },
+  { name = "crates.io", url = "https://crates.io/crates/ashpd" },
 ]
 tags = ["library"]
+tech = ["Rust"]
 
 [[project]]
 name = "Authenticator"
 desc = "Generate Two-Factor Codes"
 links = [
- { name = "Source", url = "https://gitlab.gnome.org/World/Authenticator" }
+  { name = "Source", url = "https://gitlab.gnome.org/World/Authenticator" },
+  { name = "Flathub", url = "https://flathub.org/apps/com.belmoussaoui.Authenticator" },
 ]
 tags = ["app"]
+tech = ["GTK", "Rust"]
 
 [[project]]
-name = "Contrast"
-desc = "Checks whether the contrast between two colors meet the WCAG requirements"
-links = [
- { name = "Source", url = "https://gitlab.gnome.org/World/design/contrast" }
-]
-tags = ["app"]
-
-[[project]]
-name = "QR Code"
+name = "Decoder"
 desc = "Scan and Generate QR Codes"
 links = [
- { name = "Source", url = "https://gitlab.gnome.org/World/decoder" }
+  { name = "Source", url = "https://gitlab.gnome.org/World/decoder" },
+  { name = "Flathub", url = "https://flathub.org/apps/com.belmoussaoui.Decoder" },
 ]
 tags = ["app"]
+tech = ["GTK", "Rust"]
 
 [[project]]
 name = "Flatpak VSCode Integration"
 desc = "Flatpak integration in Visual Studio Code for building & running your application"
 links = [
- { name = "Source", url = "https://github.com/bilelmoussaoui/flatpak-vscode" }
+  { name = "Source", url = "https://github.com/bilelmoussaoui/flatpak-vscode" },
+  { name = "Marketplace", url = "https://marketplace.visualstudio.com/items?itemName=bilelmoussaoui.flatpak-vscode" },
 ]
 tags = ["extension"]
+tech = ["TypeScript", "VSCode"]
 
 [[project]]
 name = "Flatpak Github Actions"
 desc = "Use Flatpak in your Github CI pipeline"
 links = [
- { name = "Source", url = "https://github.com/flatpak/flatpak-github-actions/" }
+  { name = "Source", url = "https://github.com/flatpak/flatpak-github-actions/" },
 ]
 tags = ["extension"]
-
-[[project]]
-name = "Icon Library"
-desc = "Symbolic Icons for your apps"
-links = [
- { name = "Source", url = "https://gitlab.gnome.org/World/design/icon-library" }
-]
-tags = ["app"]
+tech = ["Node.js", "GitHub Actions"]
 
 [[project]]
 name = "Obfuscate"
 desc = "Censor private information"
 links = [
- { name = "Source", url = "https://gitlab.gnome.org/World/obfuscate" }
+  { name = "Source", url = "https://gitlab.gnome.org/World/obfuscate" },
+  { name = "Flathub", url = "https://flathub.org/apps/com.belmoussaoui.Obfuscate" },
 ]
 tags = ["app"]
+tech = ["GTK", "Rust"]
 
 [[project]]
 name = "OO7"
-desc = "James Bond went on a new mission and this time as a Secret Service provider"
+desc = "A Secret Service implementation featuring a daemon, PAM module, git & cargo credentials helpers, and a CLI tool"
 links = [
- { name = "Source", url = "https://github.com/bilelmoussaoui/oo7" }
+  { name = "Source", url = "https://github.com/linux-credentials/oo7" },
+  { name = "crates.io", url = "https://crates.io/crates/oo7" },
 ]
 tags = ["library"]
+tech = ["Rust"]
+
+[[project]]
+name = "GNOME MCP Server"
+desc = "Grant the AI octopus access to a portion of your desktop"
+links = [
+  { name = "Source", url = "https://github.com/bilelmoussaoui/gnome-mcp-server/" },
+]
+tags = ["extension"]
+tech = ["Rust", "MCP"]
+
+[[project]]
+name = "GObject Linter"
+desc = "A fast tree-sitter-based linter for GObject/C code"
+links = [
+  { name = "Source", url = "https://github.com/bilelmoussaoui/gobject-linter" },
+  { name = "crates.io", url = "https://crates.io/crates/gobject-linter" },
+]
+tags = ["extension"]
+tech = ["Rust"]

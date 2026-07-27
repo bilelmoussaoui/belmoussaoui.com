@@ -42,6 +42,7 @@ Thankfully that is no longer the case for `gtk4-rs` as a huge amount of work wen
 As more people started writing custom GTK widgets/GStreamer plugins, more people looking into simplifying the whole experience grew.
 
 Creating a very simple and useless custom GTK widget looked like this the days of gtk-rs-core 0.10:
+
 ```rust
 mod imp {
     pub struct SimpleWidget;
@@ -71,6 +72,7 @@ glib::wrapper! {
 ```
 
 Nowadays it looks like this:
+
 ```rust
 mod imp {
     #[derive(Default)]
@@ -92,7 +94,6 @@ glib::wrapper! {
 ```
 
 Of course, the overall code is still a bit too verbose, particularly when you have to define GObject properties. However, people have been experimenting with writing a [derive macro](https://github.com/gtk-rs/gtk-rs-core/pull/494) to simplify the properties declaration part, as well as a [`gobject::class!`](https://github.com/gtk-rs/gtk-rs-core/issues/540) macro for generating most of the remaining boilerplate code. Note, those macros are still experiments and would need more time to mature before eventually getting merged upstream.
-
 
 ### Composite Templates
 
@@ -235,11 +236,12 @@ Flatpak can be used as a development environment with either [GNOME Builder](htt
 
 ## Portals
 
-Modern Linux applications should make use of the [portals](https://flatpak.github.io/xdg-desktop-portal/) to request runtime permissions to access resources, such as capturing the camera feed, starting a screencast session or picking a file. 
+Modern Linux applications should make use of the [portals](https://flatpak.github.io/xdg-desktop-portal/) to request runtime permissions to access resources, such as capturing the camera feed, starting a screencast session or picking a file.
 
 [ASHPD](https://crates.io/crates/ashpd) is currently the way to go for using portals from Rust as it provides a convenient and idomatic API on top of the DBus one.
 
 Code example from `ashpd-0.4.0-alpha.4` for using the color picker in a desktop environment agnostic way:
+
 ```rust
 use ashpd::desktop::screenshot::Color;
 
@@ -249,7 +251,6 @@ async fn run() -> ashpd::Result<()> {
     Ok(())
 }
 ```
-
 
 ## Keyring & oo7
 
@@ -269,7 +270,7 @@ Jordan Petridis took over my WIP work and turned it into a proper GStreamer plug
 
 ### Better Gettext Support
 
-Currently, [gettext](https://www.gnu.org/software/gettext/) doesn't support Rust officially, and most importantly, it doesn't like the `!` character, that is used by declarative macros in Rust, such as `println!` and `format!`, so we can't use string formatting for translatable texts. 
+Currently, [gettext](https://www.gnu.org/software/gettext/) doesn't support Rust officially, and most importantly, it doesn't like the `!` character, that is used by declarative macros in Rust, such as `println!` and `format!`, so we can't use string formatting for translatable texts.
 
 Kévin Commaille has submitted a [patch](https://savannah.gnu.org/bugs/?56774) for upstream gettext but sadly it hasn't been reviewed yet :( For now people are working around this by manually replacing variable names with <https://doc.rust-lang.org/std/primitive.str.html#method.replace>, which is not ideal, but it is what we have for now.
 
@@ -277,7 +278,7 @@ Kévin Commaille has submitted a [patch](https://savannah.gnu.org/bugs/?56774) f
 
 As mentioned above, subclassing code is still too verbose in some cases. Ideally, we would simplify most of it, since it is probably one of the most confusing things you have to deal with as a beginner to the gtk-rs ecosystem.
 
-* A [glib::Properties](https://gtk-rs.org/gtk-rs-core/stable/0.17/docs/glib/derive.Properties.html) derive macro is available on the glib crate as part of the 0.17 release
+- A [glib::Properties](https://gtk-rs.org/gtk-rs-core/stable/0.17/docs/glib/derive.Properties.html) derive macro is available on the glib crate as part of the 0.17 release
 
 ### Even Better Documentation
 

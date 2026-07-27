@@ -1,7 +1,7 @@
 +++
 title = "libhandy-rs v0.6.0 is out!"
+draft = true
 date = 2020-07-09
-draft = false
 
 [taxonomies]
 categories = ["Rust"]
@@ -14,7 +14,6 @@ math = false
 mermaid = false
 cc_license = true
 +++
-
 
 Recently I kind of took over the maintainership of [libhandy-rs](https://gitlab.gnome.org/World/Rust/libhandy-rs), the Rust bindings of [libhandy](https://gitlab.gnome.org/gnome/libhandy). I have since then been preparing for a new release so that Rust & GTK app developers can update to the [latest gtk-rs release](https://gtk-rs.org/blog/2020/07/04/new-release.html) as soon as possible. I also heavily depend on it on my various little apps.
 

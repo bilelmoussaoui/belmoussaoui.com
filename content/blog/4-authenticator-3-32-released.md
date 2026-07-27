@@ -1,7 +1,7 @@
 +++
 title = "Authenticator 3.32 released!"
+draft = true
 date = 2019-05-22
-draft = false
 
 [taxonomies]
 categories = ["GNOME", "Python", "Updates"]
@@ -23,7 +23,6 @@ I have been planning to work a bit on [Authenticator](https://flathub.org/apps/d
 Authenticator is a two-factor authentication application which basically generates a one time usage pin based on a unique token. It's made for GNOME using Python and GTK. The source code is available here <https://gitlab.gnome.org/World/Authenticator>
 
 {{ figure(src="/posts/4-authenticator-3-32-released/screenshot3.png", caption="Authenticator - Main Window") }}
-
 
 ## What's new in this release?
 

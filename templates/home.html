@@ -1,0 +1,133 @@
+{% extends "_base.html" %}
+{% block title %}{{ config.title }}{% endblock %}
+{% block desc %}<meta name="description" content="{{ config.description }}">{% endblock %}
+
+{% block content %}
+  <section class="mt-4 sm:mt-6 mb-10">
+    <div class="flex items-center gap-3 sm:gap-5">
+      <img src="/{{ config.extra.avatar }}" alt="{{ config.extra.name }}" class="w-16 h-16 sm:w-24 sm:h-24 rounded flex-shrink-0">
+      <div>
+        <p class="text-gray-900 dark:text-gray-100 font-medium text-sm sm:text-base">{{ config.extra.bio }}</p>
+        <p class="text-gray-500 dark:text-gray-400 mt-1 max-w-xl leading-relaxed text-sm sm:text-base">
+          Writing about whatever happens to interest me at the time.
+        </p>
+        <div class="flex items-center gap-3 mt-2">
+          {% for link in config.extra.links %}
+            <a href="{{ link.url }}" aria-label="{{ link.name }}" title="{{ link.name }}" target="_blank" rel="noreferrer noopener" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+              {% set icon_path = "static/icon/" ~ link.icon ~ ".svg" %}
+              {% set icon = load_data(path=icon_path) %}
+              <span class="w-4 h-4 inline-block">{{ icon | safe }}</span>
+            </a>
+          {% endfor %}
+          <a href="/atom.xml" aria-label="RSS Feed" title="RSS Feed" target="_blank" rel="noreferrer noopener" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+            {% set rss_icon = load_data(path="static/icon/rss.svg") %}
+            <span class="w-4 h-4 inline-block">{{ rss_icon | safe }}</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="flex gap-6 mb-6 border-b border-gray-200 dark:border-neutral-800">
+    <button id="tab-posts" class="pb-2 text-sm font-medium border-b-2 border-gray-900 dark:border-gray-100 text-gray-900 dark:text-gray-100" data-tab="posts">
+      Posts
+    </button>
+    <button id="tab-projects" class="pb-2 text-sm font-medium border-b-2 border-transparent text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" data-tab="projects">
+      Projects
+    </button>
+  </div>
+
+  <section id="panel-posts">
+    {% set blog_section_path = config.extra.blog_section_path | trim_start_matches(pat="/") %}
+    {% set section_md_path = blog_section_path ~ "/_index.md" %}
+    {% set blog_section = get_section(path=section_md_path) %}
+    <div class="space-y-3">
+      {% for post in blog_section.pages %}
+        <a href="{{ post.permalink }}" class="block group py-1">
+          <div class="flex justify-between items-baseline gap-4">
+            <span class="text-gray-800 dark:text-gray-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 font-medium truncate">
+              {{ post.title }}
+            </span>
+            <span class="text-sm text-gray-400 dark:text-gray-500 whitespace-nowrap flex-shrink-0 tabular-nums">
+              {{ post.date | date(format="%b %-d, %Y") }}
+            </span>
+          </div>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="panel-projects" class="hidden">
+    {% set data = load_data(path="content/projects/data.toml", format="toml") %}
+
+    {% set apps = [] %}
+    {% set libraries = [] %}
+    {% set extensions = [] %}
+    {% for proj in data.project %}
+      {% if proj.tags is containing("library") %}
+        {% set_global libraries = libraries | concat(with=proj) %}
+      {% elif proj.tags is containing("extension") %}
+        {% set_global extensions = extensions | concat(with=proj) %}
+      {% else %}
+        {% set_global apps = apps | concat(with=proj) %}
+      {% endif %}
+    {% endfor %}
+
+    {% if apps | length > 0 %}
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">Applications</h3>
+        <div class="space-y-4">
+          {% for proj in apps %}
+            <div>
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span class="font-semibold text-gray-900 dark:text-gray-100">{{ proj.name }}</span>
+                {% for link in proj.links %}
+                  <a href="{{ link.url }}" target="_blank" rel="noreferrer noopener" class="text-sm text-blue-600 dark:text-blue-400 underline underline-offset-2">{{ link.name }}</a>
+                {% endfor %}
+              </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ proj.desc | markdown(inline=true) | safe }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if libraries | length > 0 %}
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">Libraries</h3>
+        <div class="space-y-4">
+          {% for proj in libraries %}
+            <div>
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span class="font-semibold text-gray-900 dark:text-gray-100">{{ proj.name }}</span>
+                {% for link in proj.links %}
+                  <a href="{{ link.url }}" target="_blank" rel="noreferrer noopener" class="text-sm text-blue-600 dark:text-blue-400 underline underline-offset-2">{{ link.name }}</a>
+                {% endfor %}
+              </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ proj.desc | markdown(inline=true) | safe }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if extensions | length > 0 %}
+      <div class="mb-8">
+        <h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-3">Extensions & Tools</h3>
+        <div class="space-y-4">
+          {% for proj in extensions %}
+            <div>
+              <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                <span class="font-semibold text-gray-900 dark:text-gray-100">{{ proj.name }}</span>
+                {% for link in proj.links %}
+                  <a href="{{ link.url }}" target="_blank" rel="noreferrer noopener" class="text-sm text-blue-600 dark:text-blue-400 underline underline-offset-2">{{ link.name }}</a>
+                {% endfor %}
+              </div>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ proj.desc | markdown(inline=true) | safe }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  </section>
+{% endblock %}

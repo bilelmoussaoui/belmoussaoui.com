@@ -26,14 +26,13 @@ The most simple use case is a simple Todo list that should allow us to add new t
 
 We will need a few things in order to start hacking, the first thing is installing GNOME Builder. It's the IDE we will be using, it integrates a few useful features that we will be using like one click to build, run the application or the possibility to change the UI of our application easily as it integrates a part of Glade.
 
-### Install GNOME Builder 
+### Install GNOME Builder
 
 ![GNOME Builder](/posts/3-how-to-create-a-gtk-application-using-python-part-1/org.gnome.Builder.png)
 
 You won't be needing to install anything else. Every library that we might need like GTK, python-gobject, gobject-introspection, flatpak-builder, Meson are already shipped within Freedesktop/GNOME Runtime. We will be using the latest stable GNOME Runtime 3.32 which should be already installed on your system if you have installed Builder from Flathub (I do recommend you to do that instead of using the "normal" packaging formats). Otherwise, you can get that by typing in Terminal:
 
 ![Install GNOME SDK](/posts/3-how-to-create-a-gtk-application-using-python-part-1/Screenshot-from-2019-05-13-18-33-20.png)
-
 
 ## Getting started
 
@@ -167,7 +166,6 @@ class TodoWindow(Gtk.ApplicationWindow):
             todo_label.show()
             self.todo_list.add(todo_label)
 ```
-
 
 {{ figure(src="/posts/3-how-to-create-a-gtk-application-using-python-part-1/Screenshot-from-2019-05-14-12-30-33.png", caption="Todo - First screenshot") }}
 

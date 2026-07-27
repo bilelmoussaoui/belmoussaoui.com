@@ -1,7 +1,7 @@
 +++
 title = "Read It Later, yet an other GTK & Rust application"
+draft = true
 date = 2020-02-04
-draft = false
 
 [taxonomies]
 categories = ["GNOME", "Rust", "Updates"]

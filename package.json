@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "scripts": {
+    "css:watch": "tailwindcss -i ./input.css -o ./static/css/main.css --watch",
+    "css:build": "tailwindcss -i ./input.css -o ./static/css/main.css --minify",
+    "fmt": "dprint fmt",
+    "fmt:check": "dprint check",
+    "lint": "biome check",
+    "lint:fix": "biome check --fix"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.5.2",
+    "djlint": "^1.40.3",
+    "dprint": "^0.55.1",
+    "tailwindcss": "^3.4"
+  }
+}

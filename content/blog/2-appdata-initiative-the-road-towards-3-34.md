@@ -1,7 +1,7 @@
 +++
 title = "AppData Initiative: the road towards 3.34"
+draft = true
 date = 2019-05-04
-draft = false
 
 [taxonomies]
 categories = ["GNOME", "Updates"]

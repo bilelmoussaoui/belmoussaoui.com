@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="{% block lang %}{{ lang | default(value='en') }}{% endblock %}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    {% block desc %}{% endblock %}
+    <title>{% block title %}{{ config.title }}{% endblock %}</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700|jetbrains-mono:400,500" rel="stylesheet">
+    <link rel="alternate" type="application/atom+xml" title="{{ config.title }}" href="/atom.xml">
+    <link rel="stylesheet" href="/css/main.css">
+    <script>
+    (function() {
+      var s = localStorage.getItem('theme');
+      var dark = s === 'dark' || (!s && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (dark) document.documentElement.classList.add('dark');
+      document.write('<link id="hl" rel="stylesheet" href="/' + (dark ? 'hl-dark' : 'hl-light') + '.css">');
+    })();
+    </script>
+    <meta property="og:site_name" content="{{ config.title }}">
+    <meta property="og:locale" content="en_US">
+    {% block og %}
+      <meta property="og:type" content="website">
+      <meta property="og:title" content="{{ config.title }}">
+      <meta property="og:description" content="{{ config.description }}">
+      <meta property="og:url" content="{{ config.base_url }}">
+      <meta name="twitter:card" content="summary">
+      <meta name="twitter:title" content="{{ config.title }}">
+      <meta name="twitter:description" content="{{ config.description }}">
+    {% endblock og %}
+    {% block head %}{% endblock %}
+  </head>
+  <body class="bg-white dark:bg-neutral-950 text-gray-700 dark:text-gray-300 font-sans antialiased min-h-screen flex flex-col">
+    <main class="flex-1 w-full {% block main_class %}max-w-screen-xl mx-auto px-5 sm:px-6 lg:px-10{% endblock %} pt-8 pb-8">
+      {% block content %}{% endblock %}
+    </main>
+    {% include "_footer.html" %}
+    <script src="/js/main.js" defer></script>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

@@ -1,7 +1,7 @@
 +++
 title = "Tick Tock Clocks got redesigned!"
+draft = true
 date = 2020-02-23
-draft = false
 
 [taxonomies]
 categories = ["GNOME"]

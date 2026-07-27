@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-size: 18px;
+  }
+
+  :target {
+    scroll-margin-top: 5rem;
+  }
+}
+
+@layer components {
+  .prose {
+    font-size: 1.125rem;
+    line-height: 2;
+  }
+
+  .prose.prose-lg {
+    font-size: 1rem;
+    line-height: 2;
+  }
+
+  @media (min-width: 640px) {
+    .prose.prose-lg {
+      font-size: 1.25rem;
+      line-height: 2;
+    }
+  }
+
+  .prose.prose-lg h1 {
+    @apply text-3xl;
+  }
+  .prose.prose-lg h2 {
+    @apply text-2xl;
+  }
+  .prose.prose-lg h3 {
+    @apply text-xl;
+  }
+
+  .prose h1 {
+    @apply text-xl sm:text-2xl font-bold mt-8 sm:mt-12 mb-4 text-gray-900 dark:text-gray-100;
+  }
+  .prose h2 {
+    @apply text-lg sm:text-xl font-semibold mt-10 sm:mt-16 mb-5 text-gray-900 dark:text-gray-100 pt-6 sm:pt-8 border-t border-gray-200 dark:border-neutral-800;
+  }
+  .prose h3 {
+    @apply text-base sm:text-lg font-semibold mt-6 sm:mt-8 mb-3 text-gray-900 dark:text-gray-100;
+  }
+  .prose h4 {
+    @apply text-sm sm:text-base font-semibold mt-4 sm:mt-6 mb-2 text-gray-900 dark:text-gray-100;
+  }
+
+  .prose p {
+    @apply my-6;
+  }
+
+  .prose a {
+    @apply text-blue-600 dark:text-blue-400 underline underline-offset-2
+      decoration-blue-600/30 dark:decoration-blue-400/30
+      hover:decoration-blue-600 dark:hover:decoration-blue-400;
+  }
+
+  .prose strong {
+    @apply font-semibold text-gray-900 dark:text-gray-100;
+  }
+
+  .prose img {
+    @apply max-w-full mx-auto;
+  }
+
+  .prose figure {
+    @apply my-8;
+  }
+
+  .prose figcaption {
+    @apply text-center text-sm text-gray-500 dark:text-gray-400 mt-2;
+  }
+
+  .prose blockquote {
+    @apply border-l-2 border-gray-300 dark:border-neutral-700 pl-4 my-8 text-gray-600 dark:text-gray-400 italic;
+  }
+
+  .prose ul,
+  .prose ol {
+    @apply my-6 pl-6;
+  }
+
+  .prose ul {
+    @apply list-disc;
+  }
+
+  .prose ol {
+    @apply list-decimal;
+  }
+
+  .prose li {
+    @apply my-2;
+  }
+
+  .prose li::marker {
+    @apply text-gray-400;
+  }
+
+  .prose hr {
+    @apply my-10 border-gray-200 dark:border-neutral-800;
+  }
+
+  .prose table {
+    @apply w-full text-sm my-6 border-collapse;
+  }
+  .prose thead {
+    @apply bg-gray-100 dark:bg-neutral-900;
+  }
+  .prose th,
+  .prose td {
+    @apply border border-gray-200 dark:border-neutral-800 px-3 py-2 text-left;
+  }
+
+  .prose pre {
+    @apply my-8 pt-8 pb-4 px-4 rounded text-sm leading-relaxed overflow-x-auto
+      bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800;
+  }
+
+  .prose code {
+    @apply font-mono;
+  }
+
+  .prose :not(pre) > code {
+    @apply text-sm px-1.5 py-0.5 rounded bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-gray-200;
+  }
+
+  .prose kbd {
+    @apply text-sm font-mono px-1.5 py-0.5 rounded border border-gray-300 dark:border-neutral-600
+      bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300
+      shadow-[0_1px_0_1px] shadow-gray-300/50 dark:shadow-neutral-700/50;
+  }
+
+  .prose .footnote-definition {
+    @apply flex items-start gap-2 text-sm text-gray-500 dark:text-gray-400 my-2;
+  }
+
+  .prose .footnote-definition-label {
+    @apply font-mono;
+  }
+
+  .prose .footnote-definition p {
+    @apply my-0;
+  }
+
+  .prose .zola-anchor {
+    @apply invisible ml-2 text-gray-300 dark:text-gray-700 no-underline hover:text-gray-500 dark:hover:text-gray-400;
+    font-size: 0;
+  }
+
+  .prose .zola-anchor::after {
+    content: "";
+    display: inline-block;
+    width: 0.75em;
+    height: 0.75em;
+    font-size: 1rem;
+    background: currentColor;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+  }
+
+  .prose :is(h1, h2, h3, h4):hover .zola-anchor {
+    @apply visible;
+  }
+
+  .prose video {
+    @apply w-full h-auto my-6;
+  }
+
+  .toc-active {
+    @apply text-gray-900 dark:text-gray-100 border-gray-900 dark:border-neutral-100;
+  }
+}

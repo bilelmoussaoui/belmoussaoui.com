@@ -5,7 +5,7 @@ draft = false
 
 [taxonomies]
 categories = ["Open Source"]
-tags = []
+tags = ["GNOME"]
 
 [extra]
 lang = "en"

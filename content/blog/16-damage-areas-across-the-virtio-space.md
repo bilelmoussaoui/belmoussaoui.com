@@ -58,7 +58,7 @@ As you can tell, a bunch of components and people were involved in this few mont
 <video controls>
   <source src="/posts/16-damage-areas-across-the-virtio-space/libmks.webm" type="video/webm" />
 
-  Download the
-  <a href="/posts/16-damage-areas-across-the-virtio-space/libmks.webm">WEBM</a>
-  video.
+Download the
+<a href="/posts/16-damage-areas-across-the-virtio-space/libmks.webm">WEBM</a>
+video.
 </video>

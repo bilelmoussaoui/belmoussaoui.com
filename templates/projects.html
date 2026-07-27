@@ -1,0 +1,85 @@
+{% extends "_base.html" %}
+{% block title %}Projects - {{ config.title }}{% endblock %}
+
+{% block content %}
+  {% set data = load_data(path="content/projects/data.toml", format="toml") %}
+
+  <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Projects</h1>
+  <p class="text-gray-500 dark:text-gray-400 mb-12 max-w-2xl">Open source tools and libraries I build and maintain.</p>
+
+  {% set apps = [] %}
+  {% set libraries = [] %}
+  {% set extensions = [] %}
+  {% for proj in data.project %}
+    {% if proj.tags is containing("library") %}
+      {% set_global libraries = libraries | concat(with=proj) %}
+    {% elif proj.tags is containing("extension") %}
+      {% set_global extensions = extensions | concat(with=proj) %}
+    {% else %}
+      {% set_global apps = apps | concat(with=proj) %}
+    {% endif %}
+  {% endfor %}
+
+  {% if apps | length > 0 %}
+    <section class="mb-12">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-4">Applications</h2>
+      <div class="space-y-6">
+        {% for proj in apps %}
+          <div>
+            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 class="font-semibold text-gray-900 dark:text-gray-100">{{ proj.name }}</h3>
+              {% for link in proj.links %}
+                <a href="{{ link.url }}" target="_blank" rel="noreferrer noopener" class="text-sm text-blue-600 dark:text-blue-400 underline underline-offset-2">{{ link.name }}</a>
+              {% endfor %}
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {{ proj.desc | markdown(inline=true) | safe }}
+            </p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if libraries | length > 0 %}
+    <section class="mb-12">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-4">Libraries</h2>
+      <div class="space-y-6">
+        {% for proj in libraries %}
+          <div>
+            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 class="font-semibold text-gray-900 dark:text-gray-100">{{ proj.name }}</h3>
+              {% for link in proj.links %}
+                <a href="{{ link.url }}" target="_blank" rel="noreferrer noopener" class="text-sm text-blue-600 dark:text-blue-400 underline underline-offset-2">{{ link.name }}</a>
+              {% endfor %}
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {{ proj.desc | markdown(inline=true) | safe }}
+            </p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if extensions | length > 0 %}
+    <section class="mb-12">
+      <h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 mb-4">Extensions & Tools</h2>
+      <div class="space-y-6">
+        {% for proj in extensions %}
+          <div>
+            <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <h3 class="font-semibold text-gray-900 dark:text-gray-100">{{ proj.name }}</h3>
+              {% for link in proj.links %}
+                <a href="{{ link.url }}" target="_blank" rel="noreferrer noopener" class="text-sm text-blue-600 dark:text-blue-400 underline underline-offset-2">{{ link.name }}</a>
+              {% endfor %}
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {{ proj.desc | markdown(inline=true) | safe }}
+            </p>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endblock %}
